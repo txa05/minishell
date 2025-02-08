@@ -6,7 +6,7 @@
 /*   By: txavier <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 10:30:16 by txavier           #+#    #+#             */
-/*   Updated: 2025/02/05 16:45:04 by txavier          ###   ########.fr       */
+/*   Updated: 2025/02/08 17:49:57 by txavier          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef MINISHELL_H
@@ -73,6 +73,7 @@ void		main_loop(t_shell *shell);
 void		wait_for_processes(t_exec *exec, t_shell **shell);
 void		add_or_updt_envs(char *key, char *value, t_evar **env_list);
 void		ft_cd(char **args, t_shell *shell);
+void		heredoc_term(char **tokens, int i);
 void		free_tokens(char **tokens);
 void		execute_pipeline(char **tokens, t_shell **shell,
 				t_exec *exec, int has_next);
@@ -86,6 +87,11 @@ void		ft_pwd(t_shell *shell);
 void		ft_free(char **str);
 int			ft_strcmp(char *s1, char *s2);
 int			handle_builtin(char **tokens, t_shell **shell, t_exec *exec);
+int			handle_heredoc(char **tokens, int i);
+int			handle_input_redirection(char **tokens, int i);
+int			handle_double_output_redirection(char **tokens, int i);
+int			handle_simple_output_redirection(char **tokens, int i);
+int			execute_redirect(char **tokens);
 void		ft_export(char **args, t_shell *shell);
 void		ft_echo(char **input, t_shell *shell);
 char		*my_strtok(char *str, const char *delim);

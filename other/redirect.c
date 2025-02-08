@@ -99,44 +99,15 @@ int	handle_heredoc(char **tokens, int i)
 		close(pipefd[1]);
 		dup2(pipefd[0], STDIN_FILENO);
 		close(pipefd[0]);
-		free(tokens[i]);
-		tokens[i] = NULL;
-		free(tokens[i + 1]);
-		tokens[i + 1] = NULL;
+		heredoc_term(tokens, i);
 	}
 	return (0);
 }
 
 int	handle_redirections(char **tokens, int *def_read, int *def_write)
 {
-	int	i;
-
-	i = 0;
 	*def_read = dup(STDIN_FILENO);
 	*def_write = dup(STDOUT_FILENO);
-	while (tokens[i])
-	{
-		if (!ft_strcmp(tokens[i], ">"))
-		{
-			if (handle_simple_output_redirection(tokens, i) == -1)
-				return (-1);
-		}
-		else if (!ft_strcmp(tokens[i], ">>"))
-		{
-			if (handle_double_output_redirection(tokens, i) == -1)
-				return (-1);
-		}
-		else if (!ft_strcmp(tokens[i], "<"))
-		{
-			if (handle_input_redirection(tokens, i) == -1)
-				return (-1);
-		}
-		else if (!ft_strcmp(tokens[i], "<<"))
-		{
-			if (handle_heredoc(tokens, i) == -1)
-				return (-1);
-		}
-		i++;
-	}
+	execute_redirect(tokens);
 	return (0);
 }

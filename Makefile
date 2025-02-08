@@ -6,7 +6,7 @@
 #    By: txavier <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/28 10:21:43 by txavier           #+#    #+#              #
-#    Updated: 2025/01/24 17:41:10 by txavier          ###   ########.fr        #
+#    Updated: 2025/02/08 17:23:37 by txavier          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 NAME = minishell
@@ -15,6 +15,7 @@ SRCS = main.c \
        ./other/utils.c \
        ./other/tokenize.c \
        ./other/redirect.c \
+       ./other/redirect_aux.c \
        ./builtins/ft_cd.c \
        ./builtins/ft_pwd.c \
        ./builtins/ft_echo.c \
