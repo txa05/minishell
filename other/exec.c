@@ -73,7 +73,10 @@ void	execute_all(char **cmd, t_shell **shell)
 			break ;
 		}
 		if (handle_builtin(tokens, shell, &exec) && !cmd[i + 1])
+		{
+			free_matrix(tokens);
 			return ;
+		}
 		if (cmd[i + 1])
 			pipe(exec.fd);
 		execute_pipeline(tokens, shell, &exec, cmd[i + 1] != NULL);

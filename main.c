@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 #include "minishell.h"
 
-int	g_sig_monit = 0;
+int	g_sig;
 
 void	handle_sigs(void)
 {
@@ -23,6 +23,7 @@ int	main(int ac, char **av, char **envp)
 {
 	t_shell	*shell;
 
+	g_sig = 0;
 	(void)ac;
 	(void)av;
 	init_program(&shell, envp);

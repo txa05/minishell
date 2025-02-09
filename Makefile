@@ -23,6 +23,7 @@ SRCS = main.c \
        ./other/pipes_ft.c \
        ./builtins/ft_env.c \
        ./other/expanion_aux.c \
+       ./other/input_checker.c \
        ./builtins/ft_unset.c \
        ./other/exec_extern_cmd.c \
        ./other/exec_aux.c \

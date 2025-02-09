@@ -14,21 +14,37 @@
 int	handle_simple_output_redirection(char **tokens, int i)
 {
 	int	fd;
+	int	last_index;
+	int	temp_fd;
 
-	if (!ft_strcmp(tokens[i], ">"))
+	last_index = i;
+	while (tokens[last_index] && !ft_strcmp(tokens[last_index], ">"))
 	{
-		fd = open(tokens[i + 1], O_CREAT | O_WRONLY | O_TRUNC, 0644);
-		if (fd == -1)
+		temp_fd = open(tokens[last_index + 1],
+				O_CREAT | O_WRONLY | O_TRUNC, 0644);
+		if (temp_fd == -1)
 		{
 			perror("open");
 			return (-1);
 		}
-		dup2(fd, STDOUT_FILENO);
-		close(fd);
+		close(temp_fd);
+		last_index += 2;
+	}
+	fd = open(tokens[last_index - 1], O_CREAT | O_WRONLY | O_TRUNC, 0644);
+	if (fd == -1)
+	{
+		perror("open");
+		return (-1);
+	}
+	dup2(fd, STDOUT_FILENO);
+	close(fd);
+	while (i < last_index)
+	{
 		free(tokens[i]);
 		tokens[i] = NULL;
 		free(tokens[i + 1]);
 		tokens[i + 1] = NULL;
+		i += 2;
 	}
 	return (0);
 }
@@ -36,21 +52,37 @@ int	handle_simple_output_redirection(char **tokens, int i)
 int	handle_double_output_redirection(char **tokens, int i)
 {
 	int	fd;
+	int	last_index;
+	int	temp_fd;
 
-	if (!ft_strcmp(tokens[i], ">>"))
+	last_index = i;
+	while (tokens[last_index] && !ft_strcmp(tokens[last_index], ">>"))
 	{
-		fd = open(tokens[i + 1], O_CREAT | O_WRONLY | O_APPEND, 0644);
-		if (fd == -1)
+		temp_fd = open(tokens[last_index + 1],
+				O_CREAT | O_WRONLY | O_APPEND, 0644);
+		if (temp_fd == -1)
 		{
 			perror("open");
 			return (-1);
 		}
-		dup2(fd, STDOUT_FILENO);
-		close(fd);
+		close(temp_fd);
+		last_index += 2;
+	}
+	fd = open(tokens[last_index - 1], O_CREAT | O_WRONLY | O_APPEND, 0644);
+	if (fd == -1)
+	{
+		perror("open");
+		return (-1);
+	}
+	dup2(fd, STDOUT_FILENO);
+	close(fd);
+	while (i < last_index)
+	{
 		free(tokens[i]);
 		tokens[i] = NULL;
 		free(tokens[i + 1]);
 		tokens[i + 1] = NULL;
+		i += 2;
 	}
 	return (0);
 }

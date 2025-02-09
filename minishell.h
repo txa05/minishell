@@ -25,7 +25,7 @@
 # include <sys/wait.h>
 # include <signal.h>
 
-extern int	g_sig_monit;
+extern int	g_sig;
 
 typedef struct s_exec
 {
@@ -54,7 +54,9 @@ typedef struct s_shell
 void		handle_sigs(void);
 void		handle_ctrl_c(int sig);
 void		handle_dad(int sig);
+int			read_check(char *line);
 int			is_valid_env(const char *key);
+int			input_checker(char *input, t_shell *shell);
 int			is_builtin(char *cmd);
 int			handle_redirections(char **tokens, int *def_r, int *def_w);
 size_t		ft_strcspn(const char *s, const char *reject);
@@ -78,7 +80,7 @@ void		free_tokens(char **tokens);
 void		execute_pipeline(char **tokens, t_shell **shell,
 				t_exec *exec, int has_next);
 void		fill_env_list(char **env, t_evar **list);
-void		ft_unset(char **args, t_shell *shel);
+void		ft_unset(char **args, t_shell *shell);
 void		exit_program(t_shell *shell);
 void		init_program(t_shell **shell, char **env);
 void		builtin_exit(char **args, t_shell *shell);

@@ -15,6 +15,8 @@ void	init_execution(t_exec *exec)
 {
 	exec->prev_fd = 0;
 	exec->status = 0;
+	exec->def_w = 0;
+	exec->def_r = 0;
 	signal(SIGINT, SIG_IGN);
 }
 
@@ -23,7 +25,6 @@ int	handle_builtin(char **tokens, t_shell **shell, t_exec *exec)
 	if (is_builtin(tokens[0]))
 	{
 		exec_builtin(tokens, shell);
-		free_matrix(tokens);
 		dup2(exec->def_r, STDIN_FILENO);
 		dup2(exec->def_w, STDOUT_FILENO);
 		close(exec->def_r);
