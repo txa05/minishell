@@ -23,6 +23,7 @@
 # include <errno.h>
 # include <readline/history.h>
 # include <sys/wait.h>
+# include <sys/stat.h>
 # include <signal.h>
 
 extern int	g_sig;
