@@ -29,7 +29,7 @@ int	ft_isnumber(char *str)
 
 int	is_builtin(char *cmd)
 {
-	if (!ft_strcmp(cmd, "echo"))
+	if (*cmd && !ft_strcmp(cmd, "echo"))
 		return (1);
 	else if (!ft_strcmp(cmd, "pwd"))
 		return (1);

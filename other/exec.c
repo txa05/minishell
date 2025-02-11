@@ -6,7 +6,7 @@
 /*   By: tchiade-xavier <tchiade-xavier@student.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 13:29:40 by txavier           #+#    #+#             */
-/*   Updated: 2025/02/07 10:43:14 by txavier          ###   ########.fr       */
+/*   Updated: 2025/02/11 15:11:58 by txavier          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "../minishell.h"
@@ -56,23 +56,27 @@ void	close_all(t_exec *exec, t_shell **shell)
 
 void	execute_all(char **cmd, t_shell **shell)
 {
-	t_exec	exec;
-	int		i;
-	char	**tokens;
+	t_exec		exec;
+	int			i;
+	char		**tokens;
+	char		*fixed_input;
 
 	init_execution(&exec);
 	i = 0;
+	fixed_input = NULL;
 	while (cmd[i])
 	{
 		tokens = malloc(sizeof(char *) * 100);
-		tokenize_inputs(cmd[i], tokens);
+		fixed_input = reorder_input(cmd[i]);
+		tokenize_inputs(fixed_input, tokens);
+		free(fixed_input);
 		if (handle_redirections(tokens, &exec.def_r, &exec.def_w) == -1)
 		{
 			(*shell)->last_exit = 1;
 			free_matrix(tokens);
 			break ;
 		}
-		if (handle_builtin(tokens, shell, &exec) && !cmd[i + 1])
+		if (!cmd[i + 1] && handle_builtin(tokens, shell, &exec))
 		{
 			free_matrix(tokens);
 			return ;

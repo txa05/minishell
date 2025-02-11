@@ -13,6 +13,12 @@
 
 int	g_sig;
 
+void	handle_cat_ctrl_c(int sig)
+{
+	if (sig == SIGINT)
+		write(1, "\n", 1);
+}
+
 void	handle_sigs(void)
 {
 	signal(SIGINT, handle_ctrl_c);

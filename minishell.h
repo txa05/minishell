@@ -28,6 +28,14 @@
 
 extern int	g_sig;
 
+typedef struct s_order
+{
+	char	**normal;
+	char	**redir;
+	int		normal_count;
+	int		redir_count;
+}	t_order;
+
 typedef struct s_exec
 {
 	int		fd[2];
@@ -54,7 +62,7 @@ typedef struct s_shell
 
 void		handle_sigs(void);
 void		handle_ctrl_c(int sig);
-void		handle_dad(int sig);
+void		handle_cat_ctrl_c(int sig);
 int			read_check(char *line);
 int			is_valid_env(const char *key);
 int			input_checker(char *input, t_shell *shell);
@@ -94,9 +102,10 @@ int			handle_heredoc(char **tokens, int i);
 int			handle_input_redirection(char **tokens, int i);
 int			handle_double_output_redirection(char **tokens, int i);
 int			handle_simple_output_redirection(char **tokens, int i);
-int			execute_redirect(char **tokens);
+void		execute_redirect(char **tokens);
 void		ft_export(char **args, t_shell *shell);
 void		ft_echo(char **input, t_shell *shell);
+char		*reorder_input(const char *input);
 char		*my_strtok(char *str, const char *delim);
 char		*get_value(char *key, t_shell *shell);
 char		*expand_vars(char *input, t_shell *shell);

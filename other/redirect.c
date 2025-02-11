@@ -24,7 +24,7 @@ int	handle_simple_output_redirection(char **tokens, int i)
 				O_CREAT | O_WRONLY | O_TRUNC, 0644);
 		if (temp_fd == -1)
 		{
-			perror("open");
+			perror("open1");
 			return (-1);
 		}
 		close(temp_fd);
@@ -33,7 +33,7 @@ int	handle_simple_output_redirection(char **tokens, int i)
 	fd = open(tokens[last_index - 1], O_CREAT | O_WRONLY | O_TRUNC, 0644);
 	if (fd == -1)
 	{
-		perror("open");
+		perror("open2");
 		return (-1);
 	}
 	dup2(fd, STDOUT_FILENO);
@@ -62,7 +62,7 @@ int	handle_double_output_redirection(char **tokens, int i)
 				O_CREAT | O_WRONLY | O_APPEND, 0644);
 		if (temp_fd == -1)
 		{
-			perror("open");
+			perror("open3");
 			return (-1);
 		}
 		close(temp_fd);
@@ -71,7 +71,7 @@ int	handle_double_output_redirection(char **tokens, int i)
 	fd = open(tokens[last_index - 1], O_CREAT | O_WRONLY | O_APPEND, 0644);
 	if (fd == -1)
 	{
-		perror("open");
+		perror("open4");
 		return (-1);
 	}
 	dup2(fd, STDOUT_FILENO);
@@ -96,7 +96,9 @@ int	handle_input_redirection(char **tokens, int i)
 		fd = open(tokens[i + 1], O_RDONLY);
 		if (fd == -1)
 		{
-			perror("open");
+			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd(tokens[i + 1], 2);
+			ft_putstr_fd(": No such file or directory\n", 2);
 			return (-1);
 		}
 		dup2(fd, STDIN_FILENO);

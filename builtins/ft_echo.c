@@ -18,8 +18,8 @@ int	is_valid_flag(char *str)
 	i = 0;
 	if (str[0] != '-' && str[1] != 'n')
 		return (0);
-	i = 2;
-	while (str[i] && str[i] == 'n')
+	i = 1;
+	while (str[i] && str[i] == 'n' && str[0] == '-')
 		i++;
 	return (str[i] == '\0');
 }

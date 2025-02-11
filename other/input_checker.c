@@ -6,7 +6,7 @@
 /*   By: txavier <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/08 18:12:53 by txavier           #+#    #+#             */
-/*   Updated: 2025/02/09 17:13:16 by txavier          ###   ########.fr       */
+/*   Updated: 2025/02/11 15:17:11 by txavier          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "../minishell.h"
@@ -37,69 +37,6 @@ char	**create_matrix(char *input, int len)
 	return (matrix);
 }
 
-/*void	print_error(char c, int n_l)
-{
-	ft_putstr_fd("minishell: syntax error ", 2);
-	if (n_l)
-		printf(" near unexpected token `new_line'\n", c);
-	else
-		printf(" near unexpected token `%c\'\n", c);
-}
-
-int	validate_operators(char **matrix)
-{
-	int	i;
-
-	i = 0;
-	while (matrix[i])
-	{
-		if (!ft_strcmp(matrix[i], ">") && (!matrix[i + 1]
-				|| !ft_strcmp(matrix[i + 1], "|")))
-		{
-			print_error('|', 0);
-			return (0);
-		}
-		if (!ft_strcmp(matrix[i], "|") && !ft_strcmp(matrix[i + 1], "|"))
-		{
-			print_error('|', 0);
-			return (0);
-		}
-		if (matrix[i][0] == '>' && matrix[i + 1][0] == '>'
-				&& matrix[i + 2][0] == '>')
-		{
-			print_error('>', 0);
-			return (0);
-		}
-		if (matrix[i][0] == '|' && matrix[i + 1][0] == '>')
-		{
-			print_error('>', 1);
-			return (0);
-		}
-		if (matrix[i][0] == '>' && matrix[i + 1][0] == '>'
-				&& matrix[i + 2][0] == '<')
-		{
-			print_error('<', 0);
-			return (0);
-		}
-		if (matrix[i][0] == '>' && matrix[i + 1][0] == '<')
-		{
-			print_error('<', 0);
-			return (0);
-		}
-		if (matrix[0][0] == '|')
-		{
-			print_error('|', 0);
-			return (0);
-		}
-		if (matrix[i][0] == '|' && !matrix[i + 1])
-		{
-			perror("unexpected pipe");
-			return (0);
-		}
-		i++;
-	}
-	return (1);
-}*/
 void	print_error(char c, int n_l)
 {
 	ft_putstr_fd("minishell: syntax error ", 2);
@@ -115,11 +52,14 @@ void	print_error(char c, int n_l)
 
 int	check_redirection_errors(char **matrix, int i)
 {
-	if (!ft_strcmp(matrix[i], ">") && (!matrix[i + 1] || !ft_strcmp(matrix[i + 1], "|")))
+	if (!ft_strcmp(matrix[i], ">") && (!matrix[i + 1]
+			|| !ft_strcmp(matrix[i + 1], "|")))
 		return (print_error('|', 0), 0);
-	if (matrix[i][0] == '>' && matrix[i + 1][0] == '>' && matrix[i + 2][0] == '>')
+	if (matrix[i][0] == '>' && matrix[i + 1][0] == '>'
+			&& matrix[i + 2][0] == '>')
 		return (print_error('>', 0), 0);
-	if (matrix[i][0] == '>' && matrix[i + 1][0] == '>' && matrix[i + 2][0] == '<')
+	if (matrix[i][0] == '>' && matrix[i + 1][0] == '>'
+			&& matrix[i + 2][0] == '<')
 		return (print_error('<', 0), 0);
 	if (matrix[i][0] == '>' && matrix[i + 1][0] == '<')
 		return (print_error('<', 0), 0);
@@ -130,8 +70,6 @@ int	check_pipe_errors(char **matrix, int i)
 {
 	if (!ft_strcmp(matrix[i], "|") && !ft_strcmp(matrix[i + 1], "|"))
 		return (print_error('|', 0), 0);
-	if (matrix[i][0] == '|' && matrix[i + 1][0] == '>')
-		return (print_error('>', 1), 0);
 	if (matrix[0][0] == '|')
 		return (print_error('|', 0), 0);
 	if (matrix[i][0] == '|' && !matrix[i + 1])
@@ -146,7 +84,8 @@ int	validate_operators(char **matrix)
 	i = 0;
 	while (matrix[i] && matrix[i + 1])
 	{
-		if (!check_redirection_errors(matrix, i) || !check_pipe_errors(matrix, i))
+		if (!check_redirection_errors(matrix, i)
+			|| !check_pipe_errors(matrix, i))
 			return (0);
 		i++;
 	}

@@ -6,7 +6,7 @@
 /*   By: txavier <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 12:33:29 by txavier           #+#    #+#             */
-/*   Updated: 2025/02/07 12:41:01 by txavier          ###   ########.fr       */
+/*   Updated: 2025/02/11 14:28:47 by txavier          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "../minishell.h"
@@ -22,6 +22,8 @@ void	init_execution(t_exec *exec)
 
 int	handle_builtin(char **tokens, t_shell **shell, t_exec *exec)
 {
+	if (!tokens || !tokens[0])
+		return (0);
 	if (is_builtin(tokens[0]))
 	{
 		exec_builtin(tokens, shell);
@@ -35,9 +37,8 @@ int	handle_builtin(char **tokens, t_shell **shell, t_exec *exec)
 }
 
 void	child_process(char **tokens, t_shell **shell,
-		t_exec *exec, int has_pipe)
+			t_exec *exec, int has_pipe)
 {
-	signal(SIGINT, SIG_DFL);
 	if (exec->prev_fd)
 	{
 		dup2(exec->prev_fd, STDIN_FILENO);
@@ -49,7 +50,7 @@ void	child_process(char **tokens, t_shell **shell,
 		close(exec->fd[1]);
 		close(exec->fd[0]);
 	}
-	if (is_builtin(tokens[0]))
+	if (tokens[0] != NULL && is_builtin(tokens[0]))
 		exec_builtin(tokens, shell);
 	else
 		execute_extern_command(tokens, *shell);
@@ -59,11 +60,14 @@ void	child_process(char **tokens, t_shell **shell,
 }
 
 void	execute_pipeline(char **tokens, t_shell **shell,
-		t_exec *exec, int has_next)
+			t_exec *exec, int has_next)
 {
+	signal(SIGINT, handle_cat_ctrl_c);
 	exec->pid = fork();
 	if (exec->pid == 0)
+	{
 		child_process(tokens, shell, exec, has_next);
+	}
 	if (exec->prev_fd != 0)
 		close(exec->prev_fd);
 	if (has_next)
@@ -84,5 +88,5 @@ void	wait_for_processes(t_exec *exec, t_shell **shell)
 	if (WIFSIGNALED(exec->status) && WTERMSIG(exec->status) == SIGINT)
 		(*shell)->last_exit = 130;
 	update_exit_var(&(*shell)->env_list, ft_itoa((*shell)->last_exit));
-	signal(SIGINT, handle_ctrl_c);
+	handle_sigs();
 }

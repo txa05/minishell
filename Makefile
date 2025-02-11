@@ -21,6 +21,7 @@ SRCS = main.c \
        ./builtins/ft_echo.c \
        ./builtins/ft_export.c \
        ./other/pipes_ft.c \
+       ./other/order_input.c \
        ./builtins/ft_env.c \
        ./other/expanion_aux.c \
        ./other/input_checker.c \
