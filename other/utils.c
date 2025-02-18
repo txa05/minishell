@@ -50,7 +50,7 @@ size_t	ft_strcspn(const char *s, const char *reject)
 	return (i);
 }
 
-void	clean_token(const char *token, char *cleaned_token)
+void	clean_token(const char *token, char *cleaned_token, int *i)
 {
 	int		j;
 	int		k;
@@ -61,6 +61,8 @@ void	clean_token(const char *token, char *cleaned_token)
 	k = 0;
 	in_quot = 0;
 	quote_char = '\0';
+	if (!ft_strcmp("\">\"", (char *)token))
+		*i = 1;
 	while (token[j])
 	{
 		if ((token[j] == '"' || token[j] == '\'') && in_quot == 0)
@@ -77,7 +79,7 @@ void	clean_token(const char *token, char *cleaned_token)
 	cleaned_token[k] = '\0';
 }
 
-int	process_token(const char *token, char **args, int i)
+int	process_token(const char *token, char **args, int i, int *flag)
 {
 	int		len;
 	char	*cleaned_token;
@@ -89,7 +91,7 @@ int	process_token(const char *token, char **args, int i)
 	cleaned_token = (char *)malloc(len + 1);
 	if (!cleaned_token)
 		return (0);
-	clean_token(token, cleaned_token);
+	clean_token(token, cleaned_token, flag);
 	args[i] = cleaned_token;
 	if (!args[i])
 	{
@@ -99,7 +101,7 @@ int	process_token(const char *token, char **args, int i)
 	return (i + 1);
 }
 
-void	tokenize_inputs(char *input, char **args)
+void	tokenize_inputs(char *input, char **args, int *flag)
 {
 	int		i;
 	int		prev_i;
@@ -114,7 +116,7 @@ void	tokenize_inputs(char *input, char **args)
 	while (token != NULL)
 	{
 		prev_i = i;
-		i = process_token(token, args, i);
+		i = process_token(token, args, i, flag);
 		if (i == -1 || i == prev_i)
 		{
 			free_tokens(args);

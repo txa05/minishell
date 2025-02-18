@@ -67,7 +67,7 @@ int			read_check(char *line);
 int			is_valid_env(const char *key);
 int			input_checker(char *input, t_shell *shell);
 int			is_builtin(char *cmd);
-int			handle_redirections(char **tokens, int *def_r, int *def_w);
+int			handle_redirections(char **tokens, int *def_r, int *def_w, int *flag);
 size_t		ft_strcspn(const char *s, const char *reject);
 void		execute_all(char **cmd, t_shell **shell);
 void		split_pipes(char *input, char **commands);
@@ -110,6 +110,6 @@ char		*my_strtok(char *str, const char *delim);
 char		*get_value(char *key, t_shell *shell);
 char		*expand_vars(char *input, t_shell *shell);
 char		*ft_strjoin_free(char *s1, char *s2, int free_s1);
-void		tokenize_inputs(char *input, char **args);
+void		tokenize_inputs(char *input, char **args, int *flag);
 
 #endif

@@ -138,10 +138,12 @@ int	handle_heredoc(char **tokens, int i)
 	return (0);
 }
 
-int	handle_redirections(char **tokens, int *def_read, int *def_write)
+int	handle_redirections(char **tokens, int *def_read, int *def_write, int *flag)
 {
 	*def_read = dup(STDIN_FILENO);
 	*def_write = dup(STDOUT_FILENO);
+	if (*flag == 1)
+		return (0);
 	execute_redirect(tokens);
 	return (0);
 }

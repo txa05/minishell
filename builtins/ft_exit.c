@@ -20,7 +20,7 @@ void	exit_args_checker(char **args, t_shell *shell)
 	args[1] = str;
 	if (!ft_isnumber(args[1]))
 	{
-		ft_putstr_fd("exit\n", 2);
+		ft_putstr_fd("exit1\n", 2);
 		ft_putstr_fd(args[1], 2);
 		ft_putstr_fd(": numeric argument required\n", 2);
 		shell->last_exit = 2;
@@ -39,7 +39,7 @@ void	exit_program(t_shell *shell)
 	int	exit_code;
 
 	exit_code = shell->last_exit;
-	ft_putstr_fd("exit\n", 2);
+	ft_putstr_fd("exit2\n", 2);
 	free_env_list(shell->env_list);
 	rl_clear_history();
 	free(shell);
@@ -54,7 +54,7 @@ void	builtin_exit(char **args, t_shell *shell)
 	if (args[1])
 		exit_args_checker(args, shell);
 	exit_code = shell->last_exit;
-	ft_putstr_fd("exit\n", 1);
+	ft_putstr_fd("exit3\n", 1);
 	free_env_list(shell->env_list);
 	rl_clear_history();
 	free(shell);
