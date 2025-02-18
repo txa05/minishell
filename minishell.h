@@ -6,7 +6,7 @@
 /*   By: txavier <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 10:30:16 by txavier           #+#    #+#             */
-/*   Updated: 2025/02/08 17:49:57 by txavier          ###   ########.fr       */
+/*   Updated: 2025/02/13 18:12:31 by txavier          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef MINISHELL_H
@@ -28,13 +28,13 @@
 
 extern int	g_sig;
 
-typedef struct s_order
+/*pedef struct s_order
 {
 	char	**normal;
 	char	**redir;
 	int		normal_count;
 	int		redir_count;
-}	t_order;
+}	t_order;*/
 
 typedef struct s_exec
 {

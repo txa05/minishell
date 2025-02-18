@@ -6,25 +6,25 @@
 /*   By: txavier <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/10 12:17:38 by txavier           #+#    #+#             */
-/*   Updated: 2025/02/10 14:27:16 by txavier          ###   ########.fr       */
+/*   Updated: 2025/02/13 18:12:35 by txavier          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "../minishell.h"
-char *reorder_input(const char *input)
+char	*reorder_input(const char *input)
 {
-    char **commands = NULL;   // Para armazenar os comandos e argumentos
-    char **redirects = NULL;  // Para armazenar os redirecionamentos
-    char *result;
-    char *temp = strdup(input);
-    char *token;
+    char	**commands = NULL;   // Para armazenar os comandos e argumentos
+    char	**redirects = NULL;  // Para armazenar os redirecionamentos
+    char	*result;
+    char	*temp = strdup(input);
+    char	*token;
     int cmd_count = 0, redir_count = 0, len = 0;
 
     if (!temp)
         return NULL;
 
     // Contar o número de tokens
-    int total_tokens = 0;
-    char *temp_count = strdup(input);
+    int	total_tokens = 0;
+    char	*temp_count = strdup(input);
     token = strtok(temp_count, " ");
     while (token)
     {

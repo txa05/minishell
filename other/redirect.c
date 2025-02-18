@@ -24,7 +24,7 @@ int	handle_simple_output_redirection(char **tokens, int i)
 				O_CREAT | O_WRONLY | O_TRUNC, 0644);
 		if (temp_fd == -1)
 		{
-			perror("open1");
+			perror("open");
 			return (-1);
 		}
 		close(temp_fd);
@@ -33,7 +33,7 @@ int	handle_simple_output_redirection(char **tokens, int i)
 	fd = open(tokens[last_index - 1], O_CREAT | O_WRONLY | O_TRUNC, 0644);
 	if (fd == -1)
 	{
-		perror("open2");
+		perror("open");
 		return (-1);
 	}
 	dup2(fd, STDOUT_FILENO);
@@ -62,7 +62,7 @@ int	handle_double_output_redirection(char **tokens, int i)
 				O_CREAT | O_WRONLY | O_APPEND, 0644);
 		if (temp_fd == -1)
 		{
-			perror("open3");
+			perror("open");
 			return (-1);
 		}
 		close(temp_fd);

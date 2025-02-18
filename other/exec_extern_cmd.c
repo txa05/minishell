@@ -68,7 +68,7 @@ char	*search_cmd(char *cmd, t_shell *shell)
 	char	*path;
 	char	*home;
 
-	if (!cmd)
+	if (!cmd || *cmd == '\0')
 		return (NULL);
 	if (cmd != NULL && cmd[0] == '~')
 	{
