@@ -122,6 +122,7 @@ void	tokenize_inputs(char *input, char **args, int *flag)
 	token = my_strtok(input, " ");
 	while (token != NULL)
 	{
+		printf("-->  token %s\n", token);
 		prev_i = i;
 		i = process_token(token, args, i, flag);
 		if (i == -1 || i == prev_i)

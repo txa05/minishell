@@ -87,7 +87,7 @@ int	handle_double_output_redirection(char **tokens, int i)
 	return (0);
 }
 
-int	handle_input_redirection(char **tokens, int i)
+int	handle_input_redirection(char **tokens, int i, int *check)
 {
 	int	fd;
 
@@ -99,6 +99,7 @@ int	handle_input_redirection(char **tokens, int i)
 			ft_putstr_fd("minishell: ", 2);
 			ft_putstr_fd(tokens[i + 1], 2);
 			ft_putstr_fd(": No such file or directory\n", 2);
+			*check = 1;
 			return (-1);
 		}
 		dup2(fd, STDIN_FILENO);
@@ -138,10 +139,10 @@ int	handle_heredoc(char **tokens, int i)
 	return (0);
 }
 
-int	handle_redirections(char **tokens, int *def_read, int *def_write, int *flag)
+int	handle_redirections(char **tokens, int *def_read, int *def_write, int *flag, int *check)
 {
 	*def_read = dup(STDIN_FILENO);
 	*def_write = dup(STDOUT_FILENO);
-	execute_redirect(tokens, flag);
+	execute_redirect(tokens, flag, check);
 	return (0);
 }

@@ -34,7 +34,7 @@ int	check_syntax_errors(char **tokens, int flag)
 				i++;
 			}
 			else
-			{				
+			{
 				if (tokens[i + 1] == NULL)
 				{
 					ft_putstr_fd("Erro de sintaxe: redirecionamento sem argumento.\n", 2);
@@ -49,7 +49,9 @@ int	check_syntax_errors(char **tokens, int flag)
 			}
 		}
 		else
+		{
 			i++;
+		}
 	}
 	return 0;
 }

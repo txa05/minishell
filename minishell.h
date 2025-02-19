@@ -28,14 +28,6 @@
 
 extern int	g_sig;
 
-/*pedef struct s_order
-{
-	char	**normal;
-	char	**redir;
-	int		normal_count;
-	int		redir_count;
-}	t_order;*/
-
 typedef struct s_exec
 {
 	int		fd[2];
@@ -67,7 +59,7 @@ int			read_check(char *line);
 int			is_valid_env(const char *key);
 int			input_checker(char *input, t_shell *shell);
 int			is_builtin(char *cmd);
-int			handle_redirections(char **tokens, int *def_r, int *def_w, int *flag);
+int			handle_redirections(char **tokens, int *def_r, int *def_w, int *flag, int *check);
 size_t		ft_strcspn(const char *s, const char *reject);
 void		execute_all(char **cmd, t_shell **shell);
 void		split_pipes(char *input, char **commands);
@@ -99,10 +91,10 @@ void		ft_free(char **str);
 int			ft_strcmp(char *s1, char *s2);
 int			handle_builtin(char **tokens, t_shell **shell, t_exec *exec);
 int			handle_heredoc(char **tokens, int i);
-int			handle_input_redirection(char **tokens, int i);
+int			handle_input_redirection(char **tokens, int i, int *check);
 int			handle_double_output_redirection(char **tokens, int i);
 int			handle_simple_output_redirection(char **tokens, int i);
-void		execute_redirect(char **tokens, int *flag);
+void		execute_redirect(char **tokens, int *flag, int *check);
 void		ft_export(char **args, t_shell *shell);
 void		ft_echo(char **input, t_shell *shell);
 int			reorder_tokens(char **tokens, int flag);
@@ -111,5 +103,7 @@ char		*get_value(char *key, t_shell *shell);
 char		*expand_vars(char *input, t_shell *shell);
 char		*ft_strjoin_free(char *s1, char *s2, int free_s1);
 void		tokenize_inputs(char *input, char **args, int *flag);
+
+int	is_redirect(char *token);
 
 #endif

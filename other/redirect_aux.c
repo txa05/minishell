@@ -19,20 +19,43 @@ void	heredoc_term(char **tokens, int i)
 	tokens[i + 1] = NULL;
 }
 
-void	execute_redirect(char **tokens, int *flag)
+void	execute_redirect(char **tokens, int *flag, int *check)
 {
 	int	i;
+	int	flag2;
 
 	i = 0;
+	flag2 = *flag;
 	while (tokens[i])
 	{
-		if (!ft_strcmp(tokens[i], "<") && !*flag)
-			handle_input_redirection(tokens, i);
+		if (is_redirect(tokens[i]))
+		{
+			if (flag2)
+			{
+				flag2 -= 1;
+				i++;
+				continue ;
+			}
+		}
+		if (!ft_strcmp(tokens[i], "<"))
+		{
+			handle_input_redirection(tokens, i, check);
+		}	
 		i++;
 	}
 	i = 0;
+	flag2 = *flag;
 	while (tokens[i])
 	{
+		if (is_redirect(tokens[i]))
+		{
+			if (flag2)
+			{
+				flag2 -= 1;
+				i++;
+				continue ;
+			}
+		}
 		if (!ft_strcmp(tokens[i], ">") && !*flag)
 			handle_simple_output_redirection(tokens, i);
 		else if (!ft_strcmp(tokens[i], ">>") && !*flag)
