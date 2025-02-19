@@ -19,26 +19,28 @@ void	heredoc_term(char **tokens, int i)
 	tokens[i + 1] = NULL;
 }
 
-void	execute_redirect(char **tokens)
+void	execute_redirect(char **tokens, int *flag)
 {
 	int	i;
 
 	i = 0;
 	while (tokens[i])
 	{
-		if (!ft_strcmp(tokens[i], "<"))
+		if (!ft_strcmp(tokens[i], "<") && !*flag)
 			handle_input_redirection(tokens, i);
 		i++;
 	}
 	i = 0;
 	while (tokens[i])
 	{
-		if (!ft_strcmp(tokens[i], ">"))
+		if (!ft_strcmp(tokens[i], ">") && !*flag)
 			handle_simple_output_redirection(tokens, i);
-		else if (!ft_strcmp(tokens[i], ">>"))
+		else if (!ft_strcmp(tokens[i], ">>") && !*flag)
 			handle_double_output_redirection(tokens, i);
-		else if (!ft_strcmp(tokens[i], "<<"))
+		else if (!ft_strcmp(tokens[i], "<<") && !*flag)
 			handle_heredoc(tokens, i);
+		if (tokens[i] && !ft_strcmp(">", tokens[i]))
+			*flag -= 1;
 		i++;
 	}
 }

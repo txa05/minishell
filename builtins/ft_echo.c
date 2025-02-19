@@ -16,10 +16,10 @@ int	is_valid_flag(char *str)
 	int	i;
 
 	i = 0;
-	if (str[0] != '-' && str[1] != 'n')
+	if (str[i] != '-' || str[1] == '\0')
 		return (0);
 	i = 1;
-	while (str[i] && str[i] == 'n' && str[0] == '-')
+	while (str[i] && str[i] == 'n')
 		i++;
 	return (str[i] == '\0');
 }

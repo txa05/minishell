@@ -142,8 +142,6 @@ int	handle_redirections(char **tokens, int *def_read, int *def_write, int *flag)
 {
 	*def_read = dup(STDIN_FILENO);
 	*def_write = dup(STDOUT_FILENO);
-	if (*flag == 1)
-		return (0);
-	execute_redirect(tokens);
+	execute_redirect(tokens, flag);
 	return (0);
 }

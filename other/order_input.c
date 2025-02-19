@@ -6,106 +6,113 @@
 /*   By: txavier <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/10 12:17:38 by txavier           #+#    #+#             */
-/*   Updated: 2025/02/13 18:12:35 by txavier          ###   ########.fr       */
+/*   Updated: 2025/02/19 07:24:28 by txavier          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "../minishell.h"
-char	*reorder_input(const char *input)
+
+int	is_redirect(char *token)
 {
-    char	**commands = NULL;   // Para armazenar os comandos e argumentos
-    char	**redirects = NULL;  // Para armazenar os redirecionamentos
-    char	*result;
-    char	*temp = strdup(input);
-    char	*token;
-    int cmd_count = 0, redir_count = 0, len = 0;
+    return (ft_strcmp(token, ">") == 0 || ft_strcmp(token, "<") == 0 ||
+           ft_strcmp(token, ">>") == 0 || ft_strcmp(token, "<<") == 0);
+}
 
-    if (!temp)
-        return NULL;
+int	check_syntax_errors(char **tokens, int flag)
+{
+	int	i;
 
-    // Contar o número de tokens
-    int	total_tokens = 0;
-    char	*temp_count = strdup(input);
-    token = strtok(temp_count, " ");
-    while (token)
-    {
-        total_tokens++;
-        token = strtok(NULL, " ");
-    }
-    free(temp_count);
+	i = 0;
+	if (!tokens || !tokens[0])
+		return (1);
+	while (tokens[i] != NULL)
+	{
+		if (is_redirect(tokens[i]))
+		{
+			if (flag)
+			{
+				flag -= 1;
+				i++;
+			}
+			else
+			{				
+				if (tokens[i + 1] == NULL)
+				{
+					ft_putstr_fd("Erro de sintaxe: redirecionamento sem argumento.\n", 2);
+					return 1;
+				}
+				if (is_redirect(tokens[i + 1]))
+				{
+					ft_putstr_fd("Erro de sintaxe: redirecionamento seguido de outro redirecionamento.\n", 2);
+					return 1;
+				}
+				i += 2;
+			}
+		}
+		else
+			i++;
+	}
+	return 0;
+}
 
-    // Alocar espaço para os tokens dinamicamente
-    commands = malloc(sizeof(char *) * total_tokens);
-    redirects = malloc(sizeof(char *) * total_tokens);
-    if (!commands || !redirects)
-    {
-        free(temp);
-        free(commands);
-        free(redirects);
-        return NULL;
-    }
+int	reorder_tokens(char **tokens, int flag)
+{
+	int i = 0;
+	int cmd_count = 0;
+	int redir_count = 0;
+	char **cmd;
+	char **redir;
 
-    // Separar tokens em comandos e redirecionamentos
-    token = strtok(temp, " ");
-    while (token)
-    {
-        if (strcmp(token, ">") == 0 || strcmp(token, "<") == 0 || 
-            strcmp(token, ">>") == 0 || strcmp(token, "<<") == 0)
-        {
-            // Adiciona o redirecionamento na lista
-            redirects[redir_count++] = strdup(token);
-            // O próximo token deve ser o nome do arquivo
-            token = strtok(NULL, " ");
-            if (token)
-                redirects[redir_count++] = strdup(token);
-        }
-        else
-        {
-            // Adiciona argumentos normais na lista de comandos
-            commands[cmd_count++] = strdup(token);
-        }
-        token = strtok(NULL, " ");
-    }
-
-    // Calcular tamanho do resultado final
-    for (int i = 0; i < cmd_count; i++)
-        len += strlen(commands[i]) + 1;
-    for (int i = 0; i < redir_count; i++)
-        len += strlen(redirects[i]) + 1;
-
-    result = malloc(len + 1); // +1 para o '\0'
-    if (!result)
-    {
-        free(temp);
-        for (int i = 0; i < cmd_count; i++) free(commands[i]);
-        for (int i = 0; i < redir_count; i++) free(redirects[i]);
-        free(commands);
-        free(redirects);
-        return NULL;
-    }
-
-    result[0] = '\0';
-
-    // Adiciona os comandos primeiro
-    for (int i = 0; i < cmd_count; i++)
-    {
-        strcat(result, commands[i]);
-        if (i < cmd_count - 1)
-            strcat(result, " ");
-    }
-
-    // Adiciona os redirecionamentos no final
-    for (int i = 0; i < redir_count; i++)
-    {
-        strcat(result, " ");
-        strcat(result, redirects[i]);
-    }
-
-    // Liberar memória alocada
-    free(temp);
-    for (int i = 0; i < cmd_count; i++) free(commands[i]);
-    for (int i = 0; i < redir_count; i++) free(redirects[i]);
-    free(commands);
-    free(redirects);
-
-    return result;
+	i = 0;
+	cmd_count = 0;
+	redir_count = 0;
+	cmd = NULL;
+	redir = NULL;
+	if (!tokens || !tokens[0])
+		return 1;
+	while (tokens[i] != NULL)
+	{
+		if (is_redirect(tokens[i]))
+			redir_count += 2;
+		else
+			cmd_count++;
+		i++;
+	}
+	cmd = malloc(sizeof(char *) * (cmd_count + 1));
+	redir = malloc(sizeof(char *) * (redir_count + 1));
+	if (!cmd || !redir)
+	{
+		free(cmd);
+		free(redir);
+		return 1;
+	}
+	i = 0;
+	cmd_count = 0;
+	redir_count = 0;
+	while (tokens[i] != NULL)
+	{
+		if (is_redirect(tokens[i]))
+		{
+			redir[redir_count++] = tokens[i];
+			redir[redir_count++] = tokens[i + 1];
+			i += 2;
+		}
+		else
+		{
+			cmd[cmd_count++] = tokens[i];
+			i++;
+		}
+	}
+	cmd[cmd_count] = NULL;
+	redir[redir_count] = NULL;
+	i = 0;
+	for (int j = 0; cmd[j] != NULL; j++)
+		tokens[i++] = cmd[j];
+	for (int j = 0; redir[j] != NULL; j++)
+		tokens[i++] = redir[j];
+	tokens[i] = NULL;
+	if (check_syntax_errors(tokens, flag))
+		return 1;
+	free(cmd);
+	free(redir);
+	return 0;
 }

@@ -50,7 +50,15 @@ size_t	ft_strcspn(const char *s, const char *reject)
 	return (i);
 }
 
-void	clean_token(const char *token, char *cleaned_token, int *i)
+void	quoted_redir(int *flag, char *token)
+{
+	if (!ft_strcmp("\">\"", token) || !ft_strcmp("\">>\"", token) 
+		|| !ft_strcmp("\"<\"", token)
+		|| !ft_strcmp("\"<<\"", token))
+		*flag += 1;
+}
+
+void	clean_token(const char *token, char *cleaned_token, int *flag)
 {
 	int		j;
 	int		k;
@@ -61,8 +69,7 @@ void	clean_token(const char *token, char *cleaned_token, int *i)
 	k = 0;
 	in_quot = 0;
 	quote_char = '\0';
-	if (!ft_strcmp("\">\"", (char *)token))
-		*i = 1;
+	quoted_redir(flag, (char *)token);
 	while (token[j])
 	{
 		if ((token[j] == '"' || token[j] == '\'') && in_quot == 0)

@@ -60,18 +60,21 @@ void	execute_all(char **cmd, t_shell **shell)
 	int			i;
 	int			flag;
 	char		**tokens;
-	char		*fixed_input;
 
 	init_execution(&exec);
 	i = 0;
 	flag = 0;
-	fixed_input = NULL;
 	while (cmd[i])
 	{
 		tokens = malloc(sizeof(char *) * 100);
-		fixed_input = reorder_input(cmd[i]);
-		tokenize_inputs(fixed_input, tokens, &flag);
-		free(fixed_input);
+		tokenize_inputs(cmd[i], tokens, &flag);
+		if (reorder_tokens(tokens, flag))
+		{
+		        (*shell)->last_exit = 2;
+            		free_matrix(tokens);
+            		update_exit_var(&(*shell)->env_list, ft_itoa(2));
+            		return ;
+		}
 		if (handle_redirections(tokens, &exec.def_r, &exec.def_w, &flag) == -1)
 		{
 			(*shell)->last_exit = 1;
@@ -79,7 +82,7 @@ void	execute_all(char **cmd, t_shell **shell)
 			free_matrix(tokens);
 			break ;
 		}
-		if (!cmd[i + 1] && handle_builtin(tokens, shell, &exec))
+		if (!flag && !cmd[i + 1] && handle_builtin(tokens, shell, &exec))
 		{
 			free_matrix(tokens);
 			return ;
