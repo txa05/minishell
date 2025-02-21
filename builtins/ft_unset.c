@@ -38,17 +38,17 @@ void	remove_env_var(char *var, t_shell *shell)
 	return ;
 }
 
-void	ft_unset(char **args, t_shell *shell)
+void	ft_unset(t_shell *shell)
 {
-	int	i;
+	t_tokens	*current;
 
-	i = 1;
-	if (!args[1])
+	current = shell->tok;
+	if (!current->next)
 		return ;
-	while (args[i])
+	while (current)
 	{
-		remove_env_var(args[i], shell);
-		i++;
+		remove_env_var(current->token, shell);
+		current = current->next;
 	}
 	return ;
 }

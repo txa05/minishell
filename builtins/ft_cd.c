@@ -6,17 +6,19 @@
 /*   By: txavier <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/15 12:39:02 by txavier           #+#    #+#             */
-/*   Updated: 2025/01/15 13:04:40 by txavier          ###   ########.fr       */
+/*   Updated: 2025/02/21 16:57:30 by txavier          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "../minishell.h"
 
-void	ft_cd(char **args, t_shell *shell)
+void	ft_cd(t_shell *shell)
 {
-	char	*path;
+	char		*path;
+	t_tokens	*current;
 
+	current = shell->tok;
 	shell->last_exit = 0;
-	if (!args[1])
+	if (!current->next)
 	{
 		path = getenv("HOME");
 		if (!path)
@@ -27,10 +29,11 @@ void	ft_cd(char **args, t_shell *shell)
 		}
 	}
 	else
-		path = args[1];
+		path = current->next->token;
 	if (chdir(path) != 0)
 	{
-		printf("minishell: cd: %s: No such file or directory\n", args[1]);
+		printf("minishell: cd: %s: No such file or directory\n",
+			current->next->token);
 		shell->last_exit = 1;
 		return ;
 	}

@@ -20,13 +20,16 @@ void	init_execution(t_exec *exec)
 	signal(SIGINT, SIG_IGN);
 }
 
-int	handle_builtin(char **tokens, t_shell **shell, t_exec *exec)
+int	handle_simple_builtin(t_shell **shell, t_exec *exec)
 {
-	if (!tokens || !tokens[0])
+	t_tokens	*tok;
+
+	tok = (*shell)->tok;
+	if (!tok || !tok->token)
 		return (0);
-	if (is_builtin(tokens[0]))
+	if (is_builtin(tok->token))
 	{
-		exec_builtin(tokens, shell);
+		exec_builtin(shell);
 		dup2(exec->def_r, STDIN_FILENO);
 		dup2(exec->def_w, STDOUT_FILENO);
 		close(exec->def_r);
@@ -36,9 +39,11 @@ int	handle_builtin(char **tokens, t_shell **shell, t_exec *exec)
 	return (0);
 }
 
-void	child_process(char **tokens, t_shell **shell,
-			t_exec *exec, int has_pipe)
+void	child_process(t_shell **shell, t_exec *exec, int has_pipe)
 {
+	t_tokens	*tok;
+
+	tok = (*shell)->tok;
 	if (exec->prev_fd)
 	{
 		dup2(exec->prev_fd, STDIN_FILENO);
@@ -50,23 +55,22 @@ void	child_process(char **tokens, t_shell **shell,
 		close(exec->fd[1]);
 		close(exec->fd[0]);
 	}
-	if (tokens[0] != NULL && is_builtin(tokens[0]))
-		exec_builtin(tokens, shell);
+	if (tok->token != NULL && is_builtin(tok->token))
+		exec_builtin(shell);
 	else
-		execute_extern_command(tokens, *shell);
-	free_matrix(tokens);
+		execute_extern_command(*shell);
+	free_tokens_list((*shell)->tok);
 	free_env_list((*shell)->env_list);
 	exit((*shell)->last_exit);
 }
 
-void	execute_pipeline(char **tokens, t_shell **shell,
-			t_exec *exec, int has_next)
+void	execute_pipeline(t_shell **shell, t_exec *exec, int has_next)
 {
 	signal(SIGINT, handle_cat_ctrl_c);
 	exec->pid = fork();
 	if (exec->pid == 0)
 	{
-		child_process(tokens, shell, exec, has_next);
+		child_process(shell, exec, has_next);
 	}
 	if (exec->prev_fd != 0)
 		close(exec->prev_fd);

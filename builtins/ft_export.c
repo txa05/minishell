@@ -97,21 +97,21 @@ void	process_args(char *arg, t_shell *shell)
 	add_or_updt_envs(key, value, &shell->env_list);
 }
 
-void	ft_export(char **args, t_shell *shell)
+void	ft_export(t_shell *shell)
 {
-	int	i;
+	t_tokens	*tokens;
 
-	i = 1;
-	if (!args[1])
+	tokens = shell->tok;
+	if (tokens->next->token == NULL)
 	{
 		print_envs(shell);
 		shell->last_exit = 0;
 		return ;
 	}
-	while (args[i])
+	while (tokens->next)
 	{
-		process_args(args[i], shell);
-		i++;
+		process_args(tokens->next->token, shell);
+		tokens = tokens->next;
 	}
 	return ;
 }

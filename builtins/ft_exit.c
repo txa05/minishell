@@ -6,35 +6,39 @@
 /*   By: txavier <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 00:03:17 by txavier           #+#    #+#             */
-/*   Updated: 2025/02/07 03:03:41 by txavier          ###   ########.fr       */
+/*   Updated: 2025/02/21 16:53:11 by txavier          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "../minishell.h"
 
-void	exit_args_checker(char **args, t_shell *shell)
+int	exit_args_checker(t_shell *shell)
 {
-	char	*str;
+	t_tokens	*tokens;
+	char		*str;
 
-	str = ft_strtrim(args[1], " \t");
-	free(args[1]);
-	args[1] = str;
-	if (!ft_strcmp(args[1], "\0") || !ft_isnumber(args[1]))
+	tokens = shell->tok;
+	if (!tokens->next)
+		return (0);
+	str = ft_strtrim(tokens->next->token, " \t");
+	free(tokens->next->token);
+	tokens->next->token = str;
+	if (!ft_strcmp(tokens->next->token, "\0")
+		|| !ft_isnumber(tokens->next->token))
 	{
-		ft_putstr_fd("exit\n", 2);
-		ft_putstr_fd(args[1], 2);
+		ft_putstr_fd("minishell: exit: ", 2);
+		ft_putstr_fd(tokens->next->token, 2);
 		ft_putstr_fd(": numeric argument required\n", 2);
 		shell->last_exit = 2;
+		return (2);
 	}
-	else if (args[2])
+	else if (tokens->next->next)
 	{
-		ft_putstr_fd("exit: too many arguments\n", 2);
+		ft_putstr_fd("minishell: exit: too many arguments\n", 2);
 		shell->last_exit = 1;
+		return (1);
 	}
-	else
-	{
-		printf("exit\n");
-		shell->last_exit = ft_atoi(args[1]);
-	}
+	shell->last_exit = ft_atoi(tokens->next->token);
+	return (0);
 }
 
 void	exit_program(t_shell *shell)
@@ -49,19 +53,17 @@ void	exit_program(t_shell *shell)
 	exit(exit_code);
 }
 
-void	builtin_exit(char **args, t_shell *shell)
+void	builtin_exit(t_shell *shell)
 {
-	int	exit_code;
+	int	exit_status;
 
-	exit_code = 0;
-	if (args[1])
-		exit_args_checker(args, shell);
-	else
-		printf("exit\n");
-	exit_code = shell->last_exit;
+	printf("exit\n");
+	if (exit_args_checker(shell) == 1)
+		return ;
+	exit_status = shell->last_exit;
 	free_env_list(shell->env_list);
+	free_tokens_list(shell->tok);
 	rl_clear_history();
 	free(shell);
-	free_tokens(args);
-	exit(exit_code);
+	exit(exit_status);
 }

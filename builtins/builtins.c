@@ -6,7 +6,7 @@
 /*   By: txavier <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 15:23:08 by txavier           #+#    #+#             */
-/*   Updated: 2025/01/26 17:56:49 by txavier          ###   ########.fr       */
+/*   Updated: 2025/02/21 16:58:06 by txavier          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "../minishell.h"
@@ -47,21 +47,24 @@ int	is_builtin(char *cmd)
 		return (0);
 }
 
-void	exec_builtin(char **tokens, t_shell **shell)
+void	exec_builtin(t_shell **shell)
 {
-	if (!ft_strcmp(tokens[0], "cd"))
-		ft_cd(tokens, *shell);
-	else if (!ft_strcmp(tokens[0], "echo"))
-		ft_echo(tokens, *shell);
-	else if (!ft_strcmp(tokens[0], "pwd"))
+	t_tokens	*tok;
+
+	tok = (*shell)->tok;
+	if (!ft_strcmp(tok->token, "cd"))
+		ft_cd(*shell);
+	else if (!ft_strcmp(tok->token, "echo"))
+		ft_echo(*shell);
+	else if (!ft_strcmp(tok->token, "pwd"))
 		ft_pwd(*shell);
-	else if (!ft_strcmp(tokens[0], "env"))
-		ft_env(shell, tokens);
-	else if (!ft_strcmp(tokens[0], "export"))
-		ft_export(tokens, *shell);
-	else if (!ft_strcmp(tokens[0], "unset"))
-		ft_unset(tokens, *shell);
-	else if (!ft_strcmp(tokens[0], "exit"))
-		builtin_exit(tokens, *shell);
+	else if (!ft_strcmp(tok->token, "env"))
+		ft_env(shell);
+	else if (!ft_strcmp(tok->token, "export"))
+		ft_export(*shell);
+	else if (!ft_strcmp(tok->token, "unset"))
+		ft_unset(*shell);
+	else if (!ft_strcmp(tok->token, "exit"))
+		builtin_exit(*shell);
 	update_exit_var((&(*shell)->env_list), ft_itoa((*shell)->last_exit));
 }

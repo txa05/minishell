@@ -19,7 +19,7 @@ void	heredoc_term(char **tokens, int i)
 	tokens[i + 1] = NULL;
 }
 
-void	execute_redirect(char **tokens, int *flag, int *check)
+/*void	execute_redirect(char **tokens, int *flag, int *check)
 {
 	int	i;
 	int	flag2;
@@ -66,4 +66,4 @@ void	execute_redirect(char **tokens, int *flag, int *check)
 			*flag -= 1;
 		i++;
 	}
-}
+}*/

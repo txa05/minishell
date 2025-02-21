@@ -16,6 +16,7 @@ void	init_program(t_shell **shell, char **env)
 	*shell = malloc(sizeof(t_shell));
 	(*shell)->last_exit = 0;
 	fill_env_list(env, &(*shell)->env_list);
+	(*shell)->tok = NULL;
 }
 
 int	process_input(char *input, t_shell *shell, char **commands)

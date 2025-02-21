@@ -6,7 +6,7 @@
 #    By: txavier <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/28 10:21:43 by txavier           #+#    #+#              #
-#    Updated: 2025/02/08 17:23:37 by txavier          ###   ########.fr        #
+#    Updated: 2025/02/21 06:59:18 by txavier          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 NAME = minishell
@@ -29,6 +29,7 @@ SRCS = main.c \
        ./other/exec_extern_cmd.c \
        ./other/exec_aux.c \
        ./other/create_matrix.c \
+       ./other/create_args_matrix.c \
        ./other/exec.c \
        ./other/t_evar_list.c \
        ./other/expanion.c \

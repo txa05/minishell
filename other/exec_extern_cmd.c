@@ -6,7 +6,7 @@
 /*   By: txavier <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 11:02:33 by txavier           #+#    #+#             */
-/*   Updated: 2025/02/11 15:04:34 by txavier          ###   ########.fr       */
+/*   Updated: 2025/02/21 06:46:37 by txavier          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "../minishell.h"
@@ -116,18 +116,20 @@ void	cmd_exec_error(int i, char *str)
 		ft_putstr_fd("execve", 2);
 }
 
-void	execute_extern_command(char **tokens, t_shell *shell)
+void	execute_extern_command(t_shell *shell)
 {
 	char			*cmd_path;
 	char			**env_matrix;
+	char			**args;
 	struct stat		st;
+	t_tokens		*tok;
 
 	shell->last_exit = 0;
-	cmd_path = search_cmd(tokens[0], shell);
+	tok = shell->tok;
+	cmd_path = search_cmd(tok->token, shell);
 	if (!cmd_path)
 	{
-		cmd_exec_error(1, tokens[0]);
-		free_matrix(tokens);
+		cmd_exec_error(1, tok->token);
 		free_env_list(shell->env_list);
 		exit(127);
 	}
@@ -137,17 +139,17 @@ void	execute_extern_command(char **tokens, t_shell *shell)
 		ft_putstr_fd(cmd_path, 2);
 		ft_putstr_fd(": Is a directory\n", 2);
 		free(cmd_path);
-		free_matrix(tokens);
 		free_env_list(shell->env_list);
 		exit(126);
 	}
 	env_matrix = generate_matrix(shell->env_list);
-	if (execve(cmd_path, tokens, env_matrix) == -1)
+	args = generate_tokens_matrix(shell->tok);
+	if (execve(cmd_path, args, env_matrix) == -1)
 	{
 		cmd_exec_error(2, NULL);
 		free_env_list(shell->env_list);
 		free_matrix(env_matrix);
-		free_matrix(tokens);
+		free_matrix(args);
 		free(cmd_path);
 		exit(1);
 	}

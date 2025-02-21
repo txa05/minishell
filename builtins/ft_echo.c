@@ -6,7 +6,7 @@
 /*   By: txavier <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/15 12:11:23 by txavier           #+#    #+#             */
-/*   Updated: 2025/01/15 12:26:39 by txavier          ###   ########.fr       */
+/*   Updated: 2025/02/21 16:55:58 by txavier          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "../minishell.h"
@@ -24,30 +24,27 @@ int	is_valid_flag(char *str)
 	return (str[i] == '\0');
 }
 
-void	ft_echo(char **input, t_shell *shell)
+void	ft_echo(t_shell *shell)
 {
-	int	i;
-	int	new_line_flag;
+	t_tokens	*current;
+	int			new_line_flag;
 
-	new_line_flag = 1;
-	i = 1;
-	shell->last_exit = 0;
-	if (!input[i])
-	{
-		write(1, "\n", 1);
+	if (!shell->tok)
 		return ;
-	}
-	while (input[i] && is_valid_flag(input[i]))
+	current = shell->tok->next;
+	new_line_flag = 1;
+	shell->last_exit = 0;
+	while (current && current->token && is_valid_flag(current->token))
 	{
 		new_line_flag = 0;
-		i++;
+		current = current->next;
 	}
-	while (input[i])
+	while (current && current->token)
 	{
-		printf("%s", input[i]);
-		if (input[i + 1] != NULL)
+		printf("%s", current->token);
+		if (current->next)
 			printf(" ");
-		i++;
+		current = current->next;
 	}
 	if (new_line_flag)
 		printf("\n");
