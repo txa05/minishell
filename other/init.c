@@ -23,7 +23,7 @@ void	init_execution(t_exec *exec)
 {
 	exec->prev_fd = 0;
 	exec->status = 0;
-	exec->def_w = 0;
+	exec->def_w = 1;
 	exec->def_r = 0;
 	signal(SIGINT, SIG_IGN);
 }

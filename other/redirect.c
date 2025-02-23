@@ -65,37 +65,38 @@ int	handle_double_output_redirection(t_tokens *current)
 	return (0);
 }
 
-int	handle_input_redirection(t_tokens *current)
+int handle_input_redirection(t_tokens *current)
 {
-	int			fd;
-	t_tokens	*next;
+    int fd;
+    t_tokens *next;
 
-	if (!current || !current->next)
-		return (-1);
-	next = current->next;
-	if (current->quote_flag == 0 && !ft_strcmp(current->token, "<"))
-	{
-		fd = open(next->token, O_RDONLY);
-		if (fd == -1)
-		{
-			ft_putstr_fd("minishell: ", 2);
-			ft_putstr_fd(next->token, 2);
-			ft_putstr_fd(": No such file or directory\n", 2);
-			free(current->token);
-			current->token = NULL;
-			free(next->token);
-			next->token = NULL;
-			return (-1);
-		}
-		dup2(fd, STDIN_FILENO);
-		close(fd);
-		free(current->token);
-		current->token = NULL;
-		free(next->token);
-		next->token = NULL;
-		return (0);
-	}
-	return (0);
+    if (!current || !current->next)
+        return (-1);
+
+    next = current->next;
+    if (current->quote_flag == 0 && !ft_strcmp(current->token, "<"))
+    {
+        fd = open(next->token, O_RDONLY);
+        if (fd == -1)
+        {
+            ft_putstr_fd("minishell: ", 2);
+            ft_putstr_fd(next->token, 2);
+            ft_putstr_fd(": No such file or directory\n", 2);
+            free(current->token);
+            current->token = NULL;
+            free(next->token);
+            next->token = NULL;
+            return (-1);
+        }
+        dup2(fd, STDIN_FILENO);
+        close(fd);
+        free(current->token);
+        current->token = NULL;
+        free(next->token);
+        next->token = NULL;
+        return (0);
+    }
+    return (0);
 }
 
 int	handle_heredoc(t_tokens *current)

@@ -45,45 +45,53 @@ void	update_exit_var(t_evar **env, char *value)
 	}
 }
 
-void	close_all(t_exec *exec, t_shell **shell)
+void close_all(t_exec *exec, t_shell **shell)
 {
-	dup2(exec->def_r, STDIN_FILENO);
-	dup2(exec->def_w, STDOUT_FILENO);
-	close(exec->def_r);
-	close(exec->def_w);
-	wait_for_processes(exec, shell);
+    // Restaura os descritores padrão
+    dup2(exec->def_r, STDIN_FILENO);
+    close(exec->def_r);
+    dup2(exec->def_w, STDOUT_FILENO);
+    close(exec->def_w);
+
+    // Espera pelos processos filhos
+    wait_for_processes(exec, shell);
 }
-
-void	execute_all(char **cmd, t_shell **shell)
+void execute_all(char **cmd, t_shell **shell)
 {
-	t_exec		exec;
-	int			i;
+    t_exec exec;
+    int i;
 
-	init_execution(&exec);
-	i = 0;
-	while (cmd[i])
-	{
-		tokenize(cmd[i], &(*shell)->tok);
-		if (handle_redirections(*shell, &exec.def_r, &exec.def_w) == -1)
-		{
-			free_tokens_list((*shell)->tok);
-			(*shell)->tok = NULL;
-			(*shell)->last_exit = 1;
-			update_exit_var(&(*shell)->env_list, ft_itoa(1));
-			break ;
-		}
-		if (!cmd[i + 1] && handle_simple_builtin(shell, &exec))
-		{
-			free_tokens_list((*shell)->tok);
-			(*shell)->tok = NULL;
-			return ;
-		}
-		if (cmd[i + 1])
-			pipe(exec.fd);
-		execute_pipeline(shell, &exec, cmd[i + 1] != NULL);
-		free_tokens_list((*shell)->tok);
-		(*shell)->tok = NULL;
-		i++;
-	}
-	close_all(&exec, shell);
+    init_execution(&exec);
+    i = 0;
+    while (cmd[i])
+    {
+        tokenize(cmd[i], &(*shell)->tok);
+
+        // Aplica redirecionamentos apenas para o primeiro comando
+        if (i == 0 && handle_redirections(*shell, &exec.def_r, &exec.def_w) == -1)
+        {
+            free_tokens_list((*shell)->tok);
+            (*shell)->tok = NULL;
+            (*shell)->last_exit = 1;
+            update_exit_var(&(*shell)->env_list, ft_itoa(1));
+            break;
+        }
+
+        if (!cmd[i + 1] && handle_simple_builtin(shell, &exec))
+        {
+            free_tokens_list((*shell)->tok);
+            (*shell)->tok = NULL;
+            return;
+        }
+
+        if (cmd[i + 1])
+            pipe(exec.fd);
+
+        execute_pipeline(shell, &exec, cmd[i + 1] != NULL);
+
+        free_tokens_list((*shell)->tok);
+        (*shell)->tok = NULL;
+        i++;
+    }
+    close_all(&exec, shell);
 }
