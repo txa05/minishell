@@ -11,14 +11,6 @@
 /* ************************************************************************** */
 #include "../minishell.h"
 
-void	init_program(t_shell **shell, char **env)
-{
-	*shell = malloc(sizeof(t_shell));
-	(*shell)->last_exit = 0;
-	fill_env_list(env, &(*shell)->env_list);
-	(*shell)->tok = NULL;
-}
-
 int	process_input(char *input, t_shell *shell, char **commands)
 {
 	char	*expanded;
@@ -43,22 +35,11 @@ int	process_input(char *input, t_shell *shell, char **commands)
 		update_exit_var(&shell->env_list, ft_itoa(0));
 		return (1);
 	}
-	split_pipes(expanded, commands);
+	split_pipes(expanded, &commands);
 	execute_all(commands, &shell);
+	free_matrix(commands);
 	free(expanded);
 	return (1);
-}
-
-void	handle_ctrl_c(int sig)
-{
-	if (sig == SIGINT)
-	{
-		g_sig = SIGINT;
-		write(1, "\n", 1);
-		rl_on_new_line();
-		rl_replace_line("", 0);
-		rl_redisplay();
-	}
 }
 
 void	main_loop(t_shell *shell)

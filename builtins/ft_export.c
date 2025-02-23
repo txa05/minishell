@@ -6,7 +6,7 @@
 /*   By: txavier <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/15 13:21:09 by txavier           #+#    #+#             */
-/*   Updated: 2025/02/05 19:37:03 by txavier          ###   ########.fr       */
+/*   Updated: 2025/02/22 10:48:45 by txavier          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "../minishell.h"
@@ -102,7 +102,7 @@ void	ft_export(t_shell *shell)
 	t_tokens	*tokens;
 
 	tokens = shell->tok;
-	if (tokens->next->token == NULL)
+	if (tokens->next == NULL)
 	{
 		print_envs(shell);
 		shell->last_exit = 0;

@@ -60,15 +60,6 @@ typedef struct s_shell
 	t_tokens		*tok;
 }	t_shell;
 
-// signails_functions
-void		handle_sigs(void);
-void		handle_ctrl_c(int sig);
-void		handle_cat_ctrl_c(int sig);
-void		init_execution(t_exec *exec);
-
-int			read_check(char *line);
-int			input_checker(char *input, t_shell *shell);
-size_t		ft_strcspn(const char *s, const char *reject);
 void		execute_all(char **cmd, t_shell **shell);
 
 // builtins
@@ -89,14 +80,35 @@ char		*my_strtok(char *str, const char *delim);
 
 //redirects && pipes
 int			handle_redirections(t_shell *shell, int *def_read, int *def_write);
-int			is_redirect(char *token);
-void		split_pipes(char *input, char **commands);
+int			is_redirect(char token);
+void		split_pipes(char *input, char ***commands);
 
-// tokens
+// init && signals
+void		handle_sigs(void);
+void		handle_ctrl_c(int sig);
+void		handle_cat_ctrl_c(int sig);
+void		init_execution(t_exec *exec);
+
+
+// input && tokens
+t_tokens		*new_token(char *token, int quote_flag);
 int			ft_isnumber(char *str);
+int			skip_spaces(char *input, int i);
+int			read_check(char *line);
+int			input_checker(char *input, t_shell *shell);
+int			handle_normal_part(char *input, int i, char **token);
+int			handle_quoted_part(char *input, int i, char **token, int *quote_flag);
+size_t		ft_strcspn(const char *s, const char *reject);
 void		add_or_updt_envs(char *key, char *value, t_evar **env_list);
 void		print_tokens(t_tokens *head);
 void		tokenize(char *input, t_tokens **head);
+void		add_token(t_tokens **list, char *token, int quote_flag);
+char		*ft_strncpy(char *dest, char *src, int i);
+char		*ft_strcpy(char *s1, char *s2);
+char		*ft_strcat(char *s1, char *s2);
+char		*extract_token(char *start, int length);
+char		*concat_tokens(char *tokens1, char *tokens2);
+
 
 // matrix && lists
 void		ft_free(char **str);
@@ -117,10 +129,17 @@ void		update_exit_var(t_evar **env, char *value);
 void		wait_for_processes(t_exec *exec, t_shell **shell);
 
 // program_execution
+int			is_absolute_or_relative_path(char *cmd);
 void		init_program(t_shell **shell, char **env);
 void		main_loop(t_shell *shell);
-
+void		cmd_exec_error(int i, char *str);
+char		*handle_home_directory(char *cmd, t_shell *shell);
+char		*handle_absolute_or_relative_path(char *cmd);
+char		*ft_getenv(char *str, t_shell *shell);
+char		*find_exec(char **dirs, char *cmd);
+char		*search_in_path(char *cmd, t_shell *shell);
 char		*get_value(char *key, t_shell *shell);
+char		*search_cmd(char *cmd, t_shell *shell);
 char		*expand_vars(char *input, t_shell *shell);
 char		*ft_strjoin_free(char *s1, char *s2, int free_s1);
 

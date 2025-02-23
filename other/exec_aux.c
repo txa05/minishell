@@ -11,15 +11,6 @@
 /* ************************************************************************** */
 #include "../minishell.h"
 
-void	init_execution(t_exec *exec)
-{
-	exec->prev_fd = 0;
-	exec->status = 0;
-	exec->def_w = 0;
-	exec->def_r = 0;
-	signal(SIGINT, SIG_IGN);
-}
-
 int	handle_simple_builtin(t_shell **shell, t_exec *exec)
 {
 	t_tokens	*tok;
@@ -86,11 +77,13 @@ void	execute_pipeline(t_shell **shell, t_exec *exec, int has_next)
 void	wait_for_processes(t_exec *exec, t_shell **shell)
 {
 	while (waitpid(-1, &exec->status, 0) > 0)
-		;
-	if (WIFEXITED(exec->status))
-		(*shell)->last_exit = WEXITSTATUS(exec->status);
-	if (WIFSIGNALED(exec->status) && WTERMSIG(exec->status) == SIGINT)
-		(*shell)->last_exit = 130;
+	{
+		if (WIFEXITED(exec->status))
+			(*shell)->last_exit = WEXITSTATUS(exec->status);
+
+		if (WIFSIGNALED(exec->status) && WTERMSIG(exec->status) == SIGINT)
+			(*shell)->last_exit = 130;
+	}
 	update_exit_var(&(*shell)->env_list, ft_itoa((*shell)->last_exit));
 	handle_sigs();
 }

@@ -39,18 +39,49 @@ int	ft_strcmp(char *s1, char *s2)
 	return (s1[i] - s2[i]);
 }
 
-void	split_pipes(char *input, char **commands)
+void split_pipes(char *input, char ***commands)
 {
-	int		i;
-	char	*tokens;
+    int count = 0, i = 0, inside_quotes = 0;
+    char quote_char = 0, *temp = input;
+    char **result;
 
-	tokens = my_strtok(input, "|");
-	i = 0;
-	while (tokens)
-	{
-		commands[i] = tokens;
-		tokens = my_strtok(NULL, "|");
-		i++;
-	}
-	commands[i] = NULL;
+    // Contar quantos comandos existem considerando aspas
+    while (*temp)
+    {
+        if ((*temp == '"' || *temp == '\'') && (quote_char == 0 || quote_char == *temp))
+        {
+            inside_quotes = !inside_quotes;
+            quote_char = inside_quotes ? *temp : 0;
+        }
+        else if (*temp == '|' && !inside_quotes)
+            count++;
+        temp++;
+    }
+    count++; // Número de comandos é sempre 1 a mais que o número de '|'
+
+    result = malloc((count + 1) * sizeof(char *)); // Aloca memória para os comandos
+
+    char *start = input;
+    inside_quotes = 0;
+    quote_char = 0;
+
+    while (*input)
+    {
+        if ((*input == '"' || *input == '\'') && (quote_char == 0 || quote_char == *input))
+        {
+            inside_quotes = !inside_quotes;
+            quote_char = inside_quotes ? *input : 0;
+        }
+        else if (*input == '|' && !inside_quotes)
+        {
+            *input = '\0'; // Substitui o '|' por '\0'
+            result[i++] = strdup(start); // Copia o comando sem o '|'
+            start = input + 1; // Atualiza o início para o próximo comando
+        }
+        input++;
+    }
+    result[i++] = strdup(start); // Último comando
+    result[i] = NULL;
+
+    *commands = result; // Retorna a matriz de comandos
 }

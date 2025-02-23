@@ -74,9 +74,9 @@ void	execute_all(char **cmd, t_shell **shell)
 		}
 		if (!cmd[i + 1] && handle_simple_builtin(shell, &exec))
 		{
-            		free_tokens_list((*shell)->tok);
-            		(*shell)->tok = NULL;
-          		return ;
+			free_tokens_list((*shell)->tok);
+			(*shell)->tok = NULL;
+			return ;
 		}
 		if (cmd[i + 1])
 			pipe(exec.fd);

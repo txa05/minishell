@@ -6,62 +6,115 @@
 /*   By: txavier <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/23 16:08:17 by txavier           #+#    #+#             */
-/*   Updated: 2025/01/23 16:08:27 by txavier          ###   ########.fr       */
+/*   Updated: 2025/02/23 05:42:38 by txavier          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "../minishell.h"
 
-static char	*skip_delimiters(char *current, const char *delim,
-			int in_quot, char *str)
+int	handle_word(char *input, int i, t_tokens **head, int *quote_flag)
 {
-	if (str != NULL)
-		current = str;
-	while (*current && ft_strchr(delim, *current) && !in_quot)
-		current++;
-	return (current);
-}
+	char	*token;
 
-static char	*terminate_token(char *current)
-{
-	if (*current)
+	token = NULL;
+	while (input[i] && input[i] != ' ' && input[i] != '>' && input[i] != '<')
 	{
-		*current = '\0';
-		current++;
+		if (input[i] == '"' || input[i] == '\'')
+		{
+			i = handle_quoted_part(input, i, &token, quote_flag);
+		}
+		else
+		{
+			i = handle_normal_part(input, i, &token);
+		}
 	}
-	return (current);
-}
-
-static void	handle_quotes(char c, int *in_quot, char *quote_char)
-{
-	if ((c == '"' || c == '\'') && *in_quot == 0)
+	if (*token)
 	{
-		*in_quot = 1;
-		*quote_char = c;
+		add_token(head, token, *quote_flag);
 	}
-	else if (c == *quote_char && *in_quot)
-		*in_quot = 0;
+	return (i);
 }
 
-char	*my_strtok(char *str, const char *delim)
+int	handle_quoted_filename(char *input, int i, t_tokens **head)
 {
-	static char	*current = NULL;
-	char		*start;
-	int			in_quot;
-	char		quote_char;
+	char	quote_char;
+	int		start;
+	char	*token;
 
-	in_quot = 0;
-	quote_char = '\0';
-	current = skip_delimiters(current, delim, in_quot, str);
-	if (*current == '\0')
-		return (NULL);
-	start = current;
-	while (*current)
+	quote_char = input[i++];
+	start = i;
+	while (input[i] && input[i] != quote_char)
+		i++;
+	if (input[i] == quote_char)
+		i++;
+	token = extract_token(&input[start], i - start - 1);
+	add_token(head, token, 1);
+	return (i);
+}
+
+int	handle_normal_filename(char *input, int i, t_tokens **head)
+{
+	int		start;
+	char	*token;
+
+	start = i;
+	while (input[i] && input[i] != ' ' && input[i] != '>' && input[i] != '<')
+		i++;
+	if (i > start)
 	{
-		handle_quotes(*current, &in_quot, &quote_char);
-		if (ft_strchr(delim, *current) && !in_quot)
+		token = extract_token(&input[start], i - start);
+		add_token(head, token, 0);
+	}
+	return (i);
+}
+
+int	handle_redirection(char *input, int i, t_tokens **head)
+{
+	char	*token;
+	int	redir_len = 1;
+
+	if ((input[i] == '>' && input[i + 1] == '>')
+		|| (input[i] == '<' && input[i + 1] == '<'))
+		redir_len = 2;
+	token = extract_token(&input[i], redir_len);
+	add_token(head, token, 0);
+	i += redir_len;
+	if (input[i] == '"' || input[i] == '\'')
+	{
+		i = handle_quoted_filename(input, i, head);
+	}
+	else
+	{
+		i = handle_normal_filename(input, i, head);
+	}
+	return (i);
+}
+
+int	handle_token(char *input, int i, t_tokens **head)
+{
+	int	quote_flag;
+
+	quote_flag = 0;
+	if (input[i] == '>' || input[i] == '<')
+	{
+		i = handle_redirection(input, i, head);
+	}
+	else
+	{
+		i = handle_word(input, i, head, &quote_flag);
+	}
+	return (i);
+}
+
+void	tokenize(char *input, t_tokens **head)
+{
+	int	i;
+
+	i = 0;
+	while (input[i])
+	{
+		i = skip_spaces(input, i);
+		if (!input[i])
 			break ;
-		current++;
+		i = handle_token(input, i, head);
 	}
-	current = terminate_token(current);
-	return (start);
 }

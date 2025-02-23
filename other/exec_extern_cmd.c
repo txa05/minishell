@@ -11,28 +11,6 @@
 /* ************************************************************************** */
 #include "../minishell.h"
 
-char	*find_exec(char **dirs, char *cmd)
-{
-	char	*temp;
-	char	*full_path;
-	int		i;
-
-	i = 0;
-	temp = NULL;
-	full_path = NULL;
-	while (dirs[i])
-	{
-		temp = ft_strjoin(dirs[i], "/");
-		full_path = ft_strjoin(temp, cmd);
-		free(temp);
-		if (access(full_path, F_OK) == 0)
-			return (full_path);
-		free(full_path);
-		i++;
-	}
-	return (NULL);
-}
-
 char	*ft_getenv(char *str, t_shell *shell)
 {
 	t_evar	*current;
@@ -47,110 +25,69 @@ char	*ft_getenv(char *str, t_shell *shell)
 	return (NULL);
 }	
 
-char	*expand_home(char *cmd, t_shell *shell)
+char	*handle_home_directory(char *cmd, t_shell *shell)
 {
 	char	*home;
-	char	*expanded;
+	char	*full_path;
 
-	if (cmd[0] != '~')
-		return (cmd);
 	home = ft_getenv("HOME", shell);
 	if (!home)
-		return (cmd);
-	expanded = ft_strjoin(home, cmd + 1);
-	return (expanded);
+		return (NULL);
+	full_path = ft_strjoin(home, cmd + 1);
+	if (access(full_path, F_OK) == 0)
+		return (full_path);
+	free(full_path);
+	return (NULL);
 }
 
-char	*search_cmd(char *cmd, t_shell *shell)
+char	*handle_absolute_or_relative_path(char *cmd)
 {
-	char	*full_path;
-	char	**dirs;
-	char	*path;
-	char	*home;
-
-	if (!cmd || *cmd == '\0')
-		return (NULL);
-	if (cmd != NULL && cmd[0] == '~')
-	{
-		home = ft_getenv("HOME", shell);
-		if (!home)
-			return (NULL);
-		full_path = ft_strjoin(home, cmd + 1);
-		if (access(full_path, F_OK) == 0)
-			return (full_path);
-		free(full_path);
-		return (NULL);
-	}
-	if (cmd[0] == '/' || !ft_strncmp(cmd, "./", 2)
-		|| !ft_strncmp(cmd, "../", 3))
-	{
-		if (access(cmd, F_OK) == 0)
-			return (ft_strdup(cmd));
-		return (NULL);
-	}
-	if (!ft_strcmp(cmd, "."))
-	{
-		ft_putstr_fd("minishell: .: filename argument required\n", 2);
-		ft_putstr_fd(".: usage: . filename [arguments]\n", 2);
-		return (NULL);
-	}
-	path = ft_getenv("PATH", shell);
-	if (!path)
-		return (NULL);
-	dirs = ft_split(path, ':');
-	full_path = find_exec(dirs, cmd);
-	free_matrix(dirs);
-	return (full_path);
+	if (access(cmd, F_OK) == 0)
+		return (ft_strdup(cmd));
+	return (NULL);
 }
 
-void	cmd_exec_error(int i, char *str)
+void	print_directory_error(char *cmd_path)
 {
-	if (!str)
-		return ;
-	if (i == 1)
-	{
-		ft_putstr_fd(str, 2);
-		ft_putstr_fd(": command not found\n", 2);
-	}
-	else
-		ft_putstr_fd("execve", 2);
+	ft_putstr_fd("minishell: ", 2);
+	ft_putstr_fd(cmd_path, 2);
+	ft_putstr_fd(": Is a directory\n", 2);
+	free(cmd_path);
 }
 
-void	execute_extern_command(t_shell *shell)
+void	execute_command(t_shell *shell, char *cmd_path)
 {
-	char			*cmd_path;
-	char			**env_matrix;
-	char			**args;
-	struct stat		st;
-	t_tokens		*tok;
+	char	**env_matrix;
+	char	**args;
 
-	shell->last_exit = 0;
-	tok = shell->tok;
-	cmd_path = search_cmd(tok->token, shell);
-	if (!cmd_path)
-	{
-		cmd_exec_error(1, tok->token);
-		free_env_list(shell->env_list);
-		exit(127);
-	}
-	if (stat(cmd_path, &st) == 0 && S_ISDIR(st.st_mode))
-	{
-		ft_putstr_fd("minishell: ", 2);
-		ft_putstr_fd(cmd_path, 2);
-		ft_putstr_fd(": Is a directory\n", 2);
-		free(cmd_path);
-		free_env_list(shell->env_list);
-		exit(126);
-	}
 	env_matrix = generate_matrix(shell->env_list);
 	args = generate_tokens_matrix(shell->tok);
 	if (execve(cmd_path, args, env_matrix) == -1)
 	{
 		cmd_exec_error(2, NULL);
 		free_env_list(shell->env_list);
-		free_matrix(env_matrix);
-		free_matrix(args);
-		free(cmd_path);
 		exit(1);
 	}
+}
+
+void	execute_extern_command(t_shell *shell)
+{
+	char	*cmd_path;
+	struct stat		st;
+
+	shell->last_exit = 0;
+	cmd_path = search_cmd(shell->tok->token, shell);
+	if (!cmd_path)
+	{
+		cmd_exec_error(1, shell->tok->token);
+		free_env_list(shell->env_list);
+		exit(127);
+	}
+	if (stat(cmd_path, &st) == 0 && S_ISDIR(st.st_mode))
+	{
+		print_directory_error(cmd_path);
+		free_env_list(shell->env_list);
+		exit(126);
+	}
+	execute_command(shell, cmd_path);
 }

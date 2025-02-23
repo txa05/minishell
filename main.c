@@ -13,18 +13,6 @@
 
 int	g_sig;
 
-void	handle_cat_ctrl_c(int sig)
-{
-	if (sig == SIGINT)
-		write(1, "\n", 1);
-}
-
-void	handle_sigs(void)
-{
-	signal(SIGINT, handle_ctrl_c);
-	signal(SIGQUIT, SIG_IGN);
-}
-
 int	main(int ac, char **av, char **envp)
 {
 	t_shell	*shell;

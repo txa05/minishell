@@ -6,7 +6,7 @@
 #    By: txavier <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/28 10:21:43 by txavier           #+#    #+#              #
-#    Updated: 2025/02/21 06:59:18 by txavier          ###   ########.fr        #
+#    Updated: 2025/02/22 11:35:14 by txavier          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 NAME = minishell
@@ -22,11 +22,16 @@ SRCS = main.c \
        ./builtins/ft_export.c \
        ./other/pipes_ft.c \
        ./other/order_input.c \
+       ./other/init.c \
+       ./other/tokenize_aux.c \
+       ./other/tokenize_aux2.c \
        ./builtins/ft_env.c \
        ./other/expanion_aux.c \
+       ./other/my_strtok.c \
        ./other/input_checker.c \
        ./builtins/ft_unset.c \
        ./other/exec_extern_cmd.c \
+       ./other/exec_extern_cmd_aux.c \
        ./other/exec_aux.c \
        ./other/create_matrix.c \
        ./other/create_args_matrix.c \

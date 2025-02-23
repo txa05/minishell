@@ -18,7 +18,7 @@ void	ft_cd(t_shell *shell)
 
 	current = shell->tok;
 	shell->last_exit = 0;
-	if (!current->next)
+	if (!current->next || !ft_strcmp(current->next->token, "~"))
 	{
 		path = getenv("HOME");
 		if (!path)
