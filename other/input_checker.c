@@ -30,7 +30,9 @@ int	check_unclosed_quotes(char *input, t_shell *shell)
 	}
 	if (single_quote || double_quote)
 	{
-		update_shell_exit(shell, 1, "minishell: unclosed_quotes\n");
+		ft_putstr_fd("minishell: unclosed_quotes\n", 2);
+		shell->last_exit = 1;
+		update_exit_var(&shell->env_list, ft_itoa(1));
 		return (0);
 	}
 	return (1);

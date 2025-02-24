@@ -62,6 +62,8 @@ typedef struct s_shell
 
 void		execute_all(char **cmd, t_shell **shell);
 int			check_syntax_errors(char *input, t_shell *shell);
+int			read_check(char	*line);
+int			read_check(char	*line);
 
 // builtins
 int			handle_simple_builtin(t_shell **shell, t_exec *exec);
@@ -104,6 +106,9 @@ void		init_execution(t_exec *exec);
 t_tokens	*new_token(char *token, int quote_flag);
 int			ft_isnumber(char *str);
 int			skip_spaces(char *input, int i);
+int			check_pipe_errors(char *input, int i, t_shell *shell);
+int			check_redirection_errors(char *input, int i, t_shell *shell);
+int			check_pipe_redir_sequence(char *input, int i, t_shell *shell);
 int			read_check(char *line);
 int			input_checker(char *input, t_shell *shell);
 int			handle_word(char *input, int i, t_tokens **head, int *quote_flag);

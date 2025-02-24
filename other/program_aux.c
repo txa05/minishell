@@ -27,7 +27,10 @@ int	process_input(char *input, t_shell *shell, char **commands)
 
 	if (*input)
 		add_history(input);
-	if (!check_syntax_errors(input, shell))
+	if (read_check(input))
+		return (0);
+	if (!check_unclosed_quotes(input, shell)
+		|| !check_syntax_errors(input, shell))
 		return (0);
 	expanded = expand_vars(input, shell);
 	if (!*expanded)
@@ -47,7 +50,7 @@ int	process_input(char *input, t_shell *shell, char **commands)
 void	main_loop(t_shell *shell)
 {
 	char	*input;
-	char	*cmd[100];
+	char	*cmd[70000];
 
 	while (18)
 	{
