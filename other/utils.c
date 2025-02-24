@@ -11,6 +11,22 @@
 /* ************************************************************************** */
 #include "../minishell.h"
 
+int	is_valid_env(const char *key)
+{
+	int	i;
+
+	i = 0;
+	if (!key || (!ft_isalpha(key[0]) && key[0] != '_'))
+		return (0);
+	while (key[i])
+	{
+		if (ft_isalnum(key[i]) && key[i] == '-')
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
 size_t	ft_strcspn(const char *s, const char *reject)
 {
 	int	i;
@@ -49,6 +65,18 @@ void	free_tokens_list(t_tokens *list)
 	list = NULL;
 }
 
+int	ft_strcmp(char *s1, char *s2)
+{
+	int	i;
+
+	i = 0;
+	if (!s1 || !s2)
+		return (-1);
+	while (s1[i] && s2[i] && s1[i] == s2[i])
+		i++;
+	return (s1[i] - s2[i]);
+}
+
 void	free_tokens(char **tokens)
 {
 	int	i;
@@ -64,6 +92,7 @@ void	free_tokens(char **tokens)
 			i++;
 		}
 	}
-	free(tokens);
+	if (tokens)
+		free(tokens);
 	tokens = NULL;
 }

@@ -11,6 +11,25 @@
 /* ************************************************************************** */
 #include "../minishell.h"
 
+int	exit_msg(t_shell *shell, int exit_val, int msg_ctrl)
+{
+	if (msg_ctrl == 2)
+	{
+		ft_putstr_fd("minishell: exit: ", 2);
+		ft_putstr_fd(shell->tok->next->token, 2);
+		ft_putstr_fd(": numeric argument required\n", 2);
+		shell->last_exit = exit_val;
+		return (2);
+	}
+	if (msg_ctrl == 1)
+	{
+		ft_putstr_fd("minishell: exit: too many arguments\n", 2);
+		shell->last_exit = exit_val;
+		return (1);
+	}
+	return (0);
+}
+
 int	exit_args_checker(t_shell *shell)
 {
 	t_tokens	*tokens;
@@ -25,17 +44,11 @@ int	exit_args_checker(t_shell *shell)
 	if (!ft_strcmp(tokens->next->token, "\0")
 		|| !ft_isnumber(tokens->next->token))
 	{
-		ft_putstr_fd("minishell: exit: ", 2);
-		ft_putstr_fd(tokens->next->token, 2);
-		ft_putstr_fd(": numeric argument required\n", 2);
-		shell->last_exit = 2;
-		return (2);
+		return (exit_msg(shell, 2, 2));
 	}
 	else if (tokens->next->next)
 	{
-		ft_putstr_fd("minishell: exit: too many arguments\n", 2);
-		shell->last_exit = 1;
-		return (1);
+		return (exit_msg(shell, 1, 1));
 	}
 	shell->last_exit = ft_atoi(tokens->next->token);
 	return (0);

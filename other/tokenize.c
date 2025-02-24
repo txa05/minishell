@@ -11,29 +11,6 @@
 /* ************************************************************************** */
 #include "../minishell.h"
 
-int	handle_word(char *input, int i, t_tokens **head, int *quote_flag)
-{
-	char	*token;
-
-	token = NULL;
-	while (input[i] && input[i] != ' ' && input[i] != '>' && input[i] != '<')
-	{
-		if (input[i] == '"' || input[i] == '\'')
-		{
-			i = handle_quoted_part(input, i, &token, quote_flag);
-		}
-		else
-		{
-			i = handle_normal_part(input, i, &token);
-		}
-	}
-	if (*token)
-	{
-		add_token(head, token, *quote_flag);
-	}
-	return (i);
-}
-
 int	handle_quoted_filename(char *input, int i, t_tokens **head)
 {
 	char	quote_char;
@@ -70,8 +47,9 @@ int	handle_normal_filename(char *input, int i, t_tokens **head)
 int	handle_redirection(char *input, int i, t_tokens **head)
 {
 	char	*token;
-	int	redir_len = 1;
+	int		redir_len;
 
+	redir_len = 1;
 	if ((input[i] == '>' && input[i + 1] == '>')
 		|| (input[i] == '<' && input[i + 1] == '<'))
 		redir_len = 2;

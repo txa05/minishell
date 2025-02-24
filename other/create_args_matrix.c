@@ -14,7 +14,7 @@
 int	count_tokens_nodes(t_tokens *tokens_list)
 {
 	t_tokens	*current;
-	int		i;
+	int			i;
 
 	i = 0;
 	current = tokens_list;
@@ -54,5 +54,5 @@ char	**generate_tokens_matrix(t_tokens *tokens_list)
 		tokens_list = tokens_list->next;
 	}
 	matrix[i] = NULL;
-	return (matrix);	
+	return (matrix);
 }

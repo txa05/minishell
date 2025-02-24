@@ -20,66 +20,57 @@ int	is_redirect(char token)
 	else
 		return (0);
 }
-/*
-int	reorder_tokens(char **tokens, int flag)
-{
-	int i = 0;
-	int cmd_count = 0;
-	int redir_count = 0;
-	char **cmd;
-	char **redir;
 
+int	check_invalid_operators(char *input)
+{
+	int		len;
+	int		i;
+	char	**matrix;
+
+	len = 0;
 	i = 0;
-	cmd_count = 0;
-	redir_count = 0;
-	cmd = NULL;
-	redir = NULL;
-	if (!tokens || !tokens[0])
-		return 1;
-	while (tokens[i] != NULL)
+	while (input[i])
 	{
-		if (is_redirect(tokens[i]))
-			redir_count += 2;
-		else
-			cmd_count++;
+		if (input[i] != ' ')
+			len++;
 		i++;
 	}
-	cmd = malloc(sizeof(char *) * (cmd_count + 1));
-	redir = malloc(sizeof(char *) * (redir_count + 1));
-	if (!cmd || !redir)
+	matrix = create_matrix(input, len);
+	if (!matrix)
+		return (-1);
+	if (!validate_operators(matrix))
 	{
-		free(cmd);
-		free(redir);
-		return 1;
+		free_matrix(matrix);
+		return (0);
 	}
+	free_matrix(matrix);
+	return (1);
+}
+
+int	check_redirection_errors(char **matrix, int i)
+{
+	if (!ft_strcmp(matrix[i], ">") && (!matrix[i + 1]
+			|| !ft_strcmp(matrix[i + 1], "|")))
+		return (print_error('|', 0), 0);
+	if (matrix[i][0] == '>' && matrix[i + 1][0] == '>'
+			&& matrix[i + 2][0] == '>')
+		return (print_error('>', 0), 0);
+	if (matrix[i][0] == '>' && matrix[i + 1][0] == '>'
+			&& matrix[i + 2][0] == '<')
+		return (print_error('<', 0), 0);
+	if (matrix[i][0] == '>' && matrix[i + 1][0] == '<')
+		return (print_error('<', 0), 0);
+	return (1);
+}
+
+int	read_check(char	*line)
+{
+	int	i;
+
 	i = 0;
-	cmd_count = 0;
-	redir_count = 0;
-	while (tokens[i] != NULL)
-	{
-		if (is_redirect(tokens[i]))
-		{
-			redir[redir_count++] = tokens[i];
-			redir[redir_count++] = tokens[i + 1];
-			i += 2;
-		}
-		else
-		{
-			cmd[cmd_count++] = tokens[i];
-			i++;
-		}
-	}
-	cmd[cmd_count] = NULL;
-	redir[redir_count] = NULL;
-	i = 0;
-	for (int j = 0; cmd[j] != NULL; j++)
-		tokens[i++] = cmd[j];
-	for (int j = 0; redir[j] != NULL; j++)
-		tokens[i++] = redir[j];
-	tokens[i] = NULL;
-	if (check_syntax_errors(tokens, flag))
-		return 1;
-	free(cmd);
-	free(redir);
-	return 0;
-}*/
+	while (line[i] == ' ')
+		i++;
+	if (line[i] == '\0')
+		return (1);
+	return (0);
+}

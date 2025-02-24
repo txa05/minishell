@@ -37,6 +37,7 @@ char	*search_in_path(char *cmd, t_shell *shell)
 {
 	char	*path;
 	char	**dirs;
+
 	path = ft_getenv("PATH", shell);
 	if (!path)
 		return (NULL);

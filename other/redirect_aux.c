@@ -11,59 +11,66 @@
 /* ************************************************************************** */
 #include "../minishell.h"
 
-void	heredoc_term(char **tokens, int i)
+void	term_redirs(t_tokens **current, t_tokens **next, int *fd)
 {
-	free(tokens[i]);
-	free(tokens[i + 1]);
-	tokens[i] = NULL;
-	tokens[i + 1] = NULL;
+	if (*fd > -1)
+		close(*fd);
+	free((*current)->token);
+	(*current)->token = NULL;
+	free((*next)->token);
+	(*next)->token = NULL;
 }
 
-/*void	execute_redirect(char **tokens, int *flag, int *check)
+int	reset_heredoc_line(int pipefd[2], char **line, int len_line, char **delim)
 {
-	int	i;
-	int	flag2;
+	if (!line || !ft_strcmp(*line, *delim))
+		return (2);
+	write(pipefd[1], *line, len_line);
+	write(pipefd[1], "\n", 1);
+	free(*line);
+	return (1);
+}
 
-	i = 0;
-	flag2 = *flag;
-	while (tokens[i])
+void	heredoc_term(char **line, int pipefd[2], char **token1, char **token2)
+{
+	if (line && *line)
 	{
-		if (is_redirect(tokens[i]))
-		{
-			if (flag2)
-			{
-				flag2 -= 1;
-				i++;
-				continue ;
-			}
-		}
-		if (!ft_strcmp(tokens[i], "<"))
-		{
-			handle_input_redirection(tokens, i, check);
-		}	
-		i++;
+		free(*line);
+		*line = NULL;
 	}
-	i = 0;
-	flag2 = *flag;
-	while (tokens[i])
+	close(pipefd[1]);
+	dup2(pipefd[0], STDIN_FILENO);
+	close(pipefd[0]);
+	if (token1 && *token1)
 	{
-		if (is_redirect(tokens[i]))
-		{
-			if (flag2)
-			{
-				flag2 -= 1;
-				i++;
-				continue ;
-			}
-		}
-		if (!ft_strcmp(tokens[i], ">") && !*flag)
-			handle_simple_output_redirection(tokens, i);
-		else if (!ft_strcmp(tokens[i], ">>") && !*flag)
-			handle_double_output_redirection(tokens, i);
-		else if (!ft_strcmp(tokens[i], "<<") && !*flag)
-			handle_heredoc(tokens, i);
-		if (tokens[i] && !ft_strcmp(">", tokens[i]))
-			*flag -= 1;
-		i++;
+		free(*token1);
+		*token1 = NULL;
 	}
-}*/
+	if (token2 && *token2)
+	{
+		free(*token2);
+		*token2 = NULL;
+	}
+}
+
+void	save_def_fds(int *def_read, int	*def_write)
+{
+	*def_read = dup(STDIN_FILENO);
+	*def_write = dup(STDOUT_FILENO);
+}
+
+int	process_redirection(t_tokens *current)
+{
+	if (!ft_strcmp(current->token, "<<"))
+		handle_heredoc(current);
+	else if (!ft_strcmp(current->token, "<"))
+	{
+		if (handle_input_redirection(current) == -1)
+			return (-1);
+	}
+	else if (!ft_strcmp(current->token, ">"))
+		handle_simple_output_redirection(current);
+	else if (!ft_strcmp(current->token, ">>"))
+		handle_double_output_redirection(current);
+	return (0);
+}

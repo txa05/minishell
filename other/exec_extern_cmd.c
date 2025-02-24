@@ -9,21 +9,7 @@
 /*   Updated: 2025/02/21 06:46:37 by txavier          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "../minishell.h"
-
-char	*ft_getenv(char *str, t_shell *shell)
-{
-	t_evar	*current;
-
-	current = shell->env_list;
-	while (current)
-	{
-		if (!ft_strcmp(str, current->name))
-			return (current->value);
-		current = current->next;
-	}
-	return (NULL);
-}	
+#include "../minishell.h"	
 
 char	*handle_home_directory(char *cmd, t_shell *shell)
 {
@@ -72,8 +58,8 @@ void	execute_command(t_shell *shell, char *cmd_path)
 
 void	execute_extern_command(t_shell *shell)
 {
-	char	*cmd_path;
-	struct stat		st;
+	char		*cmd_path;
+	struct stat	st;
 
 	shell->last_exit = 0;
 	cmd_path = search_cmd(shell->tok->token, shell);

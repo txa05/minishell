@@ -50,22 +50,6 @@ void	print_error(char c, int n_l)
 	}
 }
 
-int	check_redirection_errors(char **matrix, int i)
-{
-	if (!ft_strcmp(matrix[i], ">") && (!matrix[i + 1]
-			|| !ft_strcmp(matrix[i + 1], "|")))
-		return (print_error('|', 0), 0);
-	if (matrix[i][0] == '>' && matrix[i + 1][0] == '>'
-			&& matrix[i + 2][0] == '>')
-		return (print_error('>', 0), 0);
-	if (matrix[i][0] == '>' && matrix[i + 1][0] == '>'
-			&& matrix[i + 2][0] == '<')
-		return (print_error('<', 0), 0);
-	if (matrix[i][0] == '>' && matrix[i + 1][0] == '<')
-		return (print_error('<', 0), 0);
-	return (1);
-}
-
 int	check_pipe_errors(char **matrix, int i)
 {
 	if (!ft_strcmp(matrix[i], "|") && !ft_strcmp(matrix[i + 1], "|"))
@@ -92,33 +76,16 @@ int	validate_operators(char **matrix)
 	return (1);
 }
 
-int	check_invalid_operators(char *input)
-{
-	int		len;
-	int		i;
-	char	**matrix;
 
-	len = 0;
-	i = 0;
-	while (input[i])
-	{
-		if (input[i] != ' ')
-			len++;
-		i++;
-	}
-	matrix = create_matrix(input, len);
-	if (!matrix)
-		return (-1);
-	if (!validate_operators(matrix))
-	{
-		free_matrix(matrix);
-		return (0);
-	}
-	free_matrix(matrix);
-	return (1);
+void	update_shell_exit(t_shell *shell, int exit_code, char *message)
+{
+	shell->last_exit = exit_code;
+	update_exit_var(&shell->env_list, ft_itoa(exit_code));
+	if (message)
+		ft_putstr_fd(message, 2);
 }
 
-int	input_checker(char *input, t_shell *shell)
+int	check_unclosed_quotes(char *input, t_shell *shell)
 {
 	int	i;
 	int	single_quote;
@@ -137,28 +104,27 @@ int	input_checker(char *input, t_shell *shell)
 	}
 	if (single_quote || double_quote)
 	{
-		shell->last_exit = 1;
-		update_exit_var(&shell->env_list, ft_itoa(1));
-		ft_putstr_fd("minishell: unclosed_quotes\n", 2);
-		return (0);
-	}
-	if (!check_invalid_operators(input))
-	{
-		shell->last_exit = 2;
-		update_exit_var(&shell->env_list, ft_itoa(2));
+		update_shell_exit(shell, 1, "minishell: unclosed_quotes\n");
 		return (0);
 	}
 	return (1);
 }
 
-int	read_check(char	*line)
+int	check_invalid_syntax(char *input, t_shell *shell)
 {
-	int	i;
+	if (!check_invalid_operators(input))
+	{
+		update_shell_exit(shell, 2, NULL);
+		return (0);
+	}
+	return (1);
+}
 
-	i = 0;
-	while (line[i] == ' ')
-		i++;
-	if (line[i] == '\0')
-		return (1);
-	return (0);
+int	input_checker(char *input, t_shell *shell)
+{
+	if (!check_unclosed_quotes(input, shell))
+		return (0);
+	if (!check_invalid_syntax(input, shell))
+		return (0);
+	return (1);
 }

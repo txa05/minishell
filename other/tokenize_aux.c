@@ -42,6 +42,29 @@ void	add_token(t_tokens **list, char *token, int quote_flag)
 	temp->next = new;
 }
 
+int	handle_word(char *input, int i, t_tokens **head, int *quote_flag)
+{
+	char	*token;
+
+	token = NULL;
+	while (input[i] && input[i] != ' ' && input[i] != '>' && input[i] != '<')
+	{
+		if (input[i] == '"' || input[i] == '\'')
+		{
+			i = handle_quoted_part(input, i, &token, quote_flag);
+		}
+		else
+		{
+			i = handle_normal_part(input, i, &token);
+		}
+	}
+	if (*token)
+	{
+		add_token(head, token, *quote_flag);
+	}
+	return (i);
+}
+
 char	*ft_strncpy(char *dest, char *src, int i)
 {
 	int	j;
@@ -57,22 +80,6 @@ char	*ft_strncpy(char *dest, char *src, int i)
 	}
 	dest[j] = '\0';
 	return (dest);
-}
-
-char	*ft_strcpy(char *s1, char *s2)
-{
-	int	i;
-
-	i = 0;
-	if (!s2)
-		return (s1);
-	while (s2[i] != '\0')
-	{
-		s1[i] = s2[i];
-		i++;
-	}
-	s1[i] = '\0';
-	return (s1);
 }
 
 char	*ft_strcat(char *s1, char *s2)

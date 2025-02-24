@@ -28,11 +28,7 @@ int	handle_simple_output_redirection(t_tokens *current)
 			return (-1);
 		}
 		dup2(fd, STDOUT_FILENO);
-		close(fd);
-		free(current->token);
-		current->token = NULL;
-		free(next->token);
-		next->token = NULL;
+		term_redirs(&current, &next, &fd);
 		return (0);
 	}
 	return (0);
@@ -55,48 +51,35 @@ int	handle_double_output_redirection(t_tokens *current)
 			return (-1);
 		}
 		dup2(fd, STDOUT_FILENO);
-		close(fd);
-		free(current->token);
-		current->token = NULL;
-		free(next->token);
-		next->token = NULL;
+		term_redirs(&current, &next, &fd);
 		return (0);
 	}
 	return (0);
 }
 
-int handle_input_redirection(t_tokens *current)
+int	handle_input_redirection(t_tokens *current)
 {
-    int fd;
-    t_tokens *next;
+	int			fd;
+	t_tokens	*next;
 
-    if (!current || !current->next)
-        return (-1);
-
-    next = current->next;
-    if (current->quote_flag == 0 && !ft_strcmp(current->token, "<"))
-    {
-        fd = open(next->token, O_RDONLY);
-        if (fd == -1)
-        {
-            ft_putstr_fd("minishell: ", 2);
-            ft_putstr_fd(next->token, 2);
-            ft_putstr_fd(": No such file or directory\n", 2);
-            free(current->token);
-            current->token = NULL;
-            free(next->token);
-            next->token = NULL;
-            return (-1);
-        }
-        dup2(fd, STDIN_FILENO);
-        close(fd);
-        free(current->token);
-        current->token = NULL;
-        free(next->token);
-        next->token = NULL;
-        return (0);
-    }
-    return (0);
+	if (!current || !current->next)
+		return (-1);
+	next = current->next;
+	if (current->quote_flag == 0 && !ft_strcmp(current->token, "<"))
+	{
+		fd = open(next->token, O_RDONLY);
+		if (fd == -1)
+		{
+			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd(next->token, 2);
+			ft_putstr_fd(": No such file or directory\n", 2);
+			term_redirs(&current, &next, &fd);
+			return (-1);
+		}
+		term_redirs(&current, &next, &fd);
+		return (0);
+	}
+	return (0);
 }
 
 int	handle_heredoc(t_tokens *current)
@@ -116,19 +99,11 @@ int	handle_heredoc(t_tokens *current)
 		while (1)
 		{
 			line = readline("> ");
-			if (!line || !ft_strcmp(line, delim))
+			if (reset_heredoc_line(pipefd,
+					&line, ft_strlen(line), &delim) == 2)
 				break ;
-			write(pipefd[1], line, ft_strlen(line));
-			write(pipefd[1], "\n", 1);
-			free(line);
 		}
-		close(pipefd[1]);
-		dup2(pipefd[0], STDIN_FILENO);
-		close(pipefd[0]);
-		free(current->token);
-		current->token = NULL;
-		free(next->token);
-		next->token = NULL;
+		heredoc_term(&line, pipefd, &current->token, &next->token);
 		return (0);
 	}
 	return (0);
@@ -138,8 +113,7 @@ int	handle_redirections(t_shell *shell, int *def_read, int *def_write)
 {
 	t_tokens	*current;
 
-	*def_read = dup(STDIN_FILENO);
-	*def_write = dup(STDOUT_FILENO);
+	save_def_fds(def_read, def_write);
 	if (!shell->tok || !shell->tok->token)
 		return (0);
 	current = shell->tok;
@@ -147,17 +121,8 @@ int	handle_redirections(t_shell *shell, int *def_read, int *def_write)
 	{
 		if (current->quote_flag == 0)
 		{
-			if (!ft_strcmp(current->token, ">"))
-				handle_simple_output_redirection(current);
-			else if (!ft_strcmp(current->token, ">>"))
-				handle_double_output_redirection(current);
-			else if (!ft_strcmp(current->token, "<"))
-			{
-				if (handle_input_redirection(current) == -1)
-					return (-1);
-			}
-			else if (!ft_strcmp(current->token, "<<"))
-				handle_heredoc(current);
+			if (process_redirection(current) == -1)
+				return (-1);
 		}
 		current = current->next;
 	}
