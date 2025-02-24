@@ -11,14 +11,9 @@
 /* ************************************************************************** */
 #include "../minishell.h"
 
-int	my_checker(char *input, t_shell *shell)
+int	my_checker(char *input)
 {
 	if (read_check(input))
-	{
-		free(input);
-		return (0);
-	}
-	if (!input_checker(input, shell))
 	{
 		free(input);
 		return (0);
@@ -32,8 +27,8 @@ int	process_input(char *input, t_shell *shell, char **commands)
 
 	if (*input)
 		add_history(input);
-	//if (!check_syntax_errors(input, shell))
-	//	return (0);
+	if (!check_syntax_errors(input, shell))
+		return (0);
 	expanded = expand_vars(input, shell);
 	if (!*expanded)
 	{
@@ -70,7 +65,10 @@ void	main_loop(t_shell *shell)
 			break ;
 		}
 		if (process_input(input, shell, cmd) == 0)
+		{
+			free(input);
 			continue ;
+		}
 		free(input);
 	}
 }

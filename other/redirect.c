@@ -28,7 +28,7 @@ int	handle_simple_output_redirection(t_tokens *current)
 			return (-1);
 		}
 		dup2(fd, STDOUT_FILENO);
-		term_redirs(&current, &next, &fd);
+		term_redirs(current, next, fd);
 		return (0);
 	}
 	return (0);
@@ -51,7 +51,7 @@ int	handle_double_output_redirection(t_tokens *current)
 			return (-1);
 		}
 		dup2(fd, STDOUT_FILENO);
-		term_redirs(&current, &next, &fd);
+		term_redirs(current, next, fd);
 		return (0);
 	}
 	return (0);
@@ -73,10 +73,11 @@ int	handle_input_redirection(t_tokens *current)
 			ft_putstr_fd("minishell: ", 2);
 			ft_putstr_fd(next->token, 2);
 			ft_putstr_fd(": No such file or directory\n", 2);
-			term_redirs(&current, &next, &fd);
+			term_redirs(current, next, fd);
 			return (-1);
 		}
-		term_redirs(&current, &next, &fd);
+		dup2(fd, STDIN_FILENO);
+		term_redirs(current, next, fd);
 		return (0);
 	}
 	return (0);

@@ -11,14 +11,14 @@
 /* ************************************************************************** */
 #include "../minishell.h"
 
-void	term_redirs(t_tokens **current, t_tokens **next, int *fd)
+void	term_redirs(t_tokens *current, t_tokens *next, int fd)
 {
-	if (*fd > -1)
-		close(*fd);
-	free((*current)->token);
-	(*current)->token = NULL;
-	free((*next)->token);
-	(*next)->token = NULL;
+	if (fd > -1)
+		close(fd);
+	free(current->token);
+	current->token = NULL;
+	free(next->token);
+	next->token = NULL;
 }
 
 int	reset_heredoc_line(int pipefd[2], char **line, int len_line, char **delim)

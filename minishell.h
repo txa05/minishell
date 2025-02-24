@@ -90,7 +90,7 @@ int			reset_heredoc_line(int pipefd[2], char **line,
 				int len_line, char **delim);
 void		save_def_fds(int *def_read, int	*def_write);
 void		split_pipes(char *input, char ***commands);
-void		term_redirs(t_tokens **current, t_tokens **next, int *fd);
+void		term_redirs(t_tokens *current, t_tokens *next, int fd);
 void		heredoc_term(char **line, int pipefd[2],
 				char **token1, char **token2);
 
@@ -113,7 +113,7 @@ int			check_invalid_operators(char *input);
 int			handle_quoted_part(char *input, int i, char **token,
 				int *quote_flag);
 size_t		ft_strcspn(const char *s, const char *reject);
-int			check_redirection_errors(char **matrix, int i);
+//int			check_redirection_errors(char **matrix, int i);
 void		add_or_updt_envs(char *key, char *value, t_evar **env_list);
 void		print_tokens(t_tokens *head);
 void		tokenize(char *input, t_tokens **head);
@@ -137,9 +137,11 @@ void		fill_env_list(char **env, t_evar **list);
 char		**generate_matrix(t_evar *env_list);
 char		**generate_tokens_matrix(t_tokens *tokens_list);
 int			ft_strcmp(char *s1, char *s2);
+void		update_shell_exit(t_shell *shell, int exit_code, char *message);
 
 //extern_cmd && pipes
 int			count_commands(char *input);
+int			check_unclosed_quotes(char *input, t_shell *shell);
 void		execute_extern_command(t_shell *shell);
 void		execute_pipeline(t_shell **shell, t_exec *exec, int has_next);
 void		exec_with_pipes(char **tokens, t_evar *env);
@@ -153,6 +155,7 @@ void		handle_pipe_quotes(char **input, int *inside_quotes,
 char		*ft_strcpy(char *s1, char *s2);
 
 // program_execution
+int			check_unclosed_quotes(char *input, t_shell *shell);
 int			is_absolute_or_relative_path(char *cmd);
 void		init_program(t_shell **shell, char **env);
 void		main_loop(t_shell *shell);
