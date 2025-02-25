@@ -52,7 +52,10 @@ char	*search_in_path(char *cmd, t_shell *shell)
 void	cmd_exec_error(int i, char *str)
 {
 	if (!str)
+	{
+		ft_putstr_fd(": command not found\n", 2);
 		return ;
+	}
 	if (i == 1)
 	{
 		ft_putstr_fd(str, 2);

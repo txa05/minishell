@@ -64,7 +64,7 @@ void	child_process(t_shell **shell, t_exec *exec, int has_pipe)
 		close(exec->fd[1]);
 		close(exec->fd[0]);
 	}
-	if (tok->token != NULL && is_builtin(tok->token))
+	if (tok != NULL && is_builtin(tok->token))
 		exec_builtin(shell);
 	else
 		execute_extern_command(*shell);

@@ -52,13 +52,17 @@ int	handle_word(char *input, int i, t_tokens **head, int *quote_flag)
 		if (input[i] == '"' || input[i] == '\'')
 		{
 			i = handle_quoted_part(input, i, &token, quote_flag);
+			if (!token)
+				return (i);
 		}
 		else
 		{
 			i = handle_normal_part(input, i, &token);
+			if (!token)
+				return (i);
 		}
 	}
-	if (*token)
+	if (token)
 	{
 		add_token(head, token, *quote_flag);
 	}

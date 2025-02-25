@@ -62,6 +62,12 @@ void	execute_extern_command(t_shell *shell)
 	struct stat	st;
 
 	shell->last_exit = 0;
+	if (!shell->tok)
+	{
+		cmd_exec_error(1, NULL);
+		free_env_list(shell->env_list);
+		exit(127);
+	}
 	cmd_path = search_cmd(shell->tok->token, shell);
 	if (!cmd_path)
 	{
