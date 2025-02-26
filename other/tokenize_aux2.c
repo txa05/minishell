@@ -19,10 +19,7 @@ char	*extract_token(char *start, int length)
 		return (NULL);
 	token = malloc(length + 1);
 	if (!token)
-	{
-		free(token);
 		return (NULL);
-	}
 	ft_strncpy(token, start, length);
 	return (token);
 }

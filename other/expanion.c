@@ -74,11 +74,17 @@ char	*expand_vars(char *input, t_shell *shell)
 	while (input[i])
 	{
 		handle_quotes(input[i], &in_single_quote, &in_double_quote);
-		if (input[i] == '$' && input[i + 1] && !in_single_quote
-			&& (ft_isalnum(input[i + 1]) || input[i + 1] == '_'
-				|| input[i + 1] == '?'))
-			result = expand_variable(result,
-					extract_variable(input, &i), shell);
+		if (input[i] == '$' && input[i + 1] && !in_single_quote)
+		{
+			if (input[i + 1] == '"' || input[i + 1] == '\'')
+				i++;
+			else if (ft_isalnum(input[i + 1]) || input[i + 1] == '_'
+				|| input[i + 1] == '?')
+				result = expand_variable(result,
+						extract_variable(input, &i), shell);
+			else
+				result = append_char(result, input[i++]);
+		}
 		else
 			result = append_char(result, input[i++]);
 	}

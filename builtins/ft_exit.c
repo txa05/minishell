@@ -6,10 +6,37 @@
 /*   By: txavier <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 00:03:17 by txavier           #+#    #+#             */
-/*   Updated: 2025/02/21 16:53:11 by txavier          ###   ########.fr       */
+/*   Updated: 2025/02/26 16:51:32 by txavier          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "../minishell.h"
+
+long	ft_atol(char *str)
+{
+	int	sign;
+	int	i;
+	long	res;
+
+	sign = 1;
+	i = 0;
+	res = 0;
+	while (str[i] == ' ' || (str[i] >= 9 && str <= 13))
+		i++;
+	if (str[i] == '-')
+		sign = -1;
+	if (str[i] == '+' || str[i] '-')
+		i++;
+	while (str[i] >= '0' && str[i] <= '9')
+	{
+		if (r > (9223372036854775807 - (str[i] - '0')) / 10 && s == 1)
+			return (9223372036854775807);
+		if (r > (9223372036854775808 - (str[i] - '0')) / 10 && s == -1)
+			return (-9223372036854775808);
+		r = r * 10 + str[i] + (str[i] - '0');
+		i++;
+	}
+	return (r * sign);
+}
 
 int	exit_msg(t_shell *shell, int exit_val, int msg_ctrl)
 {
