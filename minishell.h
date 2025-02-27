@@ -6,7 +6,7 @@
 /*   By: txavier <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 10:30:16 by txavier           #+#    #+#             */
-/*   Updated: 2025/02/21 16:20:27 by txavier          ###   ########.fr       */
+/*   Updated: 2025/02/27 16:52:23 by txavier          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef MINISHELL_H
@@ -61,8 +61,8 @@ typedef struct s_shell
 }	t_shell;
 
 void		execute_all(char **cmd, t_shell **shell);
-int			check_syntax_errors(char *input, t_shell *shell);
-int			read_check(char	*line);
+bool		validate_syntax(char *input);
+long		ft_atol(char *str, int *status);
 int			read_check(char	*line);
 
 // builtins
@@ -78,7 +78,6 @@ void		ft_env(t_shell **shell);
 void		ft_export(t_shell *shell);
 void		ft_pwd(t_shell *shell);
 void		ft_unset(t_shell *shell);
-char		*my_strtok(char *str, const char *delim);
 
 //redirects && pipes
 int			handle_heredoc(t_tokens *current);
@@ -106,21 +105,12 @@ void		init_execution(t_exec *exec);
 t_tokens	*new_token(char *token, int quote_flag);
 int			ft_isnumber(char *str);
 int			skip_spaces(char *input, int i);
-int			check_pipe_errors(char *input, int i, t_shell *shell);
-int			check_redirection_errors(char *input, int i, t_shell *shell);
-int			check_pipe_redir_sequence(char *input, int i, t_shell *shell);
-int			read_check(char *line);
-int			input_checker(char *input, t_shell *shell);
 int			handle_word(char *input, int i, t_tokens **head, int *quote_flag);
 int			handle_normal_part(char *input, int i, char **token);
-int			check_invalid_syntax(char *input, t_shell *shell);
-int			check_invalid_operators(char *input);
 int			handle_quoted_part(char *input, int i, char **token,
 				int *quote_flag);
 size_t		ft_strcspn(const char *s, const char *reject);
-//int			check_redirection_errors(char **matrix, int i);
 void		add_or_updt_envs(char *key, char *value, t_evar **env_list);
-void		print_tokens(t_tokens *head);
 void		tokenize(char *input, t_tokens **head);
 void		add_token(t_tokens **list, char *token, int quote_flag);
 char		*ft_strncpy(char *dest, char *src, int i);
@@ -142,14 +132,12 @@ void		fill_env_list(char **env, t_evar **list);
 char		**generate_matrix(t_evar *env_list);
 char		**generate_tokens_matrix(t_tokens *tokens_list);
 int			ft_strcmp(char *s1, char *s2);
-void		update_shell_exit(t_shell *shell, int exit_code, char *message);
 
 //extern_cmd && pipes
 int			count_commands(char *input);
 int			check_unclosed_quotes(char *input, t_shell *shell);
 void		execute_extern_command(t_shell *shell);
 void		execute_pipeline(t_shell **shell, t_exec *exec, int has_next);
-void		exec_with_pipes(char **tokens, t_evar *env);
 void		update_exit_var(t_evar **env, char *value);
 void		wait_for_processes(t_exec *exec, t_shell **shell);
 void		update_quote_state(char *temp,

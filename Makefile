@@ -6,7 +6,7 @@
 #    By: txavier <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/28 10:21:43 by txavier           #+#    #+#              #
-#    Updated: 2025/02/22 11:35:14 by txavier          ###   ########.fr        #
+#    Updated: 2025/02/27 13:06:42 by txavier          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 NAME = minishell
@@ -42,6 +42,7 @@ SRCS = main.c \
        ./other/expanion.c \
        ./other/program_aux.c \
        ./builtins/ft_exit.c \
+       ./builtins/ft_exit_aux.c \
        ./builtins/builtins.c
 
 OBJS = $(SRCS:.c=.o)

@@ -29,6 +29,8 @@ int	process_input(char *input, t_shell *shell, char **commands)
 		add_history(input);
 	if (read_check(input))
 		return (0);
+	if (!validate_syntax(input))
+		return (0);
 	if (!check_unclosed_quotes(input, shell))
 		return (0);
 	expanded = expand_vars(input, shell);
