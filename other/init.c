@@ -38,6 +38,7 @@ void	handle_ctrl_c(int sig)
 {
 	if (sig == SIGINT)
 	{
+		(void)sig;
 		g_sig = SIGINT;
 		write(1, "\n", 1);
 		rl_on_new_line();

@@ -51,7 +51,7 @@ int	process_input(char *input, t_shell *shell, char **commands)
 void	main_loop(t_shell *shell)
 {
 	char	*input;
-	char	*cmd[70000];
+	char	*cmd[70000] = {NULL};
 
 	while (18)
 	{
@@ -75,4 +75,5 @@ void	main_loop(t_shell *shell)
 		}
 		free(input);
 	}
+	exit_program(shell);
 }

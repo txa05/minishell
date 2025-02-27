@@ -102,5 +102,4 @@ void	wait_for_processes(t_exec *exec, t_shell **shell)
 			(*shell)->last_exit = 130;
 	}
 	update_exit_var(&(*shell)->env_list, ft_itoa((*shell)->last_exit));
-	handle_sigs();
 }

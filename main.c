@@ -22,6 +22,5 @@ int	main(int ac, char **av, char **envp)
 	(void)av;
 	init_program(&shell, envp);
 	main_loop(shell);
-	exit_program(shell);
 	return (0);
 }

@@ -40,7 +40,7 @@ void	process_command_execution(char **cmd, t_shell **shell,
 			t_exec *exec, int i)
 {
 	tokenize(cmd[i], &(*shell)->tok);
-	if (i == 0
+	if (!cmd[i + 1]
 		&& handle_redirections(*shell, &exec->def_r, &exec->def_w) == -1)
 	{
 		free_tokens_list((*shell)->tok);
